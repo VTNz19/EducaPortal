@@ -6,7 +6,7 @@ from .models import Aviso
 class AvisoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Aviso
-        fields = ['id', 'titulo', 'conteudo', 'criado_em', 'atualizado_em']
+        fields = ['id', 'titulo', 'conteudo', 'criado_em', 'atualizado_em','fixado']
         read_only_fields = ['id', 'criado_em', 'atualizado_em']
 
     def validate_titulo(self, value):

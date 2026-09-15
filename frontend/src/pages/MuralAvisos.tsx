@@ -23,7 +23,7 @@ export function MuralAvisos() {
         <main>
             <h1>Mural de Avisos</h1>
             <AvisoForm onAvisoCriado={carregarAvisos} />
-            {carregando ? <p>Carregando avisos...</p> : <AvisoList avisos={avisos} onAvisoExcluido={carregarAvisos} />}
+            {carregando ? <p>Carregando avisos...</p> : <AvisoList avisos={avisos} onAvisoAtualizado={carregarAvisos} />}
         </main>
     )
 }

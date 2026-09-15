@@ -5,9 +5,10 @@ class Aviso(models.Model):
     conteudo = models.TextField()
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
+    fixado = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['-criado_em']
+        ordering = ['-fixado','-criado_em']
 
     def __str__(self):
         return self.titulo

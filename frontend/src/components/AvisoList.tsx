@@ -1,15 +1,20 @@
 import type { Aviso } from '../api/avisos'
-import { excluirAviso } from '../api/avisos'
+import { alternarFixado, excluirAviso } from '../api/avisos'
 
 interface AvisoListProps {
     avisos: Aviso[]
-    onAvisoExcluido: () => void
+    onAvisoAtualizado: () => void
 }
 
-export function AvisoList({ avisos, onAvisoExcluido }: AvisoListProps) {
+export function AvisoList({ avisos, onAvisoAtualizado }: AvisoListProps) {
     async function handleExcluir(id: number) {
         await excluirAviso(id)
-        onAvisoExcluido()
+        onAvisoAtualizado()
+    }
+
+    async function handleAlternarFixado(aviso: Aviso) {
+        await alternarFixado(aviso.id, !aviso.fixado)
+        onAvisoAtualizado()
     }
 
     if (avisos.length === 0) {
@@ -20,9 +25,13 @@ export function AvisoList({ avisos, onAvisoExcluido }: AvisoListProps) {
         <ul>
             {avisos.map((aviso) => (
                 <li key={aviso.id}>
+                    {aviso.fixado && <strong>📌 Fixado</strong>}
                     <h3>{aviso.titulo}</h3>
                     <p>{aviso.conteudo}</p>
                     <small>{new Date(aviso.criado_em).toLocaleString('pt-BR')}</small>
+                    <button type="button" onClick={() => handleAlternarFixado(aviso)}>
+                        {aviso.fixado ? 'Desafixar' : 'Fixar'}
+                    </button>
                     <button type="button" onClick={() => handleExcluir(aviso.id)}>
                         Excluir
                     </button>

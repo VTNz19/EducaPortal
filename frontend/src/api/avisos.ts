@@ -6,6 +6,7 @@ export interface Aviso {
     id: number;
     titulo: string
     conteudo: string
+    fixado: boolean
     criado_em: string
     atualizado_em: string
 }
@@ -22,4 +23,9 @@ export async function criarAviso(titulo: string, conteudo: string): Promise<Avis
 
 export async function excluirAviso(id: number): Promise<void> {
     await axios.delete(`${API_URL}${id}/`)
+}
+
+export async function alternarFixado(id: number, fixado: boolean): Promise<Aviso> {
+    const response = await axios.patch(`${API_URL}${id}/`, { fixado })
+    return response.data
 }
