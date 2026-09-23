@@ -1,0 +1,81 @@
+.inicial-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.inicial-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+
+.inicial-logo {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1F4B43;
+}
+
+.inicial-login-botao {
+    background: #1F4B43;
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.inicial-login-botao:hover {
+    background: #163a33;
+}
+
+.inicial-hero {
+    flex: 1;
+    background-color: #1F4B43;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 40px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 40px);
+    color: #f5f5f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 64px 24px;
+}
+
+.inicial-hero-tag {
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.12);
+    padding: 6px 16px;
+    border-radius: 999px;
+    margin-bottom: 24px;
+}
+
+.inicial-hero h1 {
+    color: #f5f5f0;
+    font-size: 40px;
+    max-width: 640px;
+    margin: 0 0 16px;
+}
+
+.inicial-hero p {
+    font-size: 17px;
+    line-height: 1.6;
+    max-width: 560px;
+    opacity: 0.85;
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .inicial-hero h1 {
+        font-size: 30px;
+    }
+}

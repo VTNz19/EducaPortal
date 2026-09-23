@@ -1,0 +1,201 @@
+.mural-page {
+    min-height: 100vh;
+    background: #f4f5f2;
+}
+
+.mural-topbar {
+    background: #1F4B43;
+    color: #f5f5f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+}
+
+.mural-logo {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.mural-topbar-usuario {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+}
+
+.mural-topbar-usuario button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: #f5f5f0;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.mural-topbar-usuario button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.mural-conteudo {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px;
+    text-align: center;
+}
+
+.mural-conteudo h1 {
+    color: #1F4B43;
+    font-size: 32px;
+    margin-bottom: 24px;
+}
+
+.mural-acoes {
+    margin-bottom: 24px;
+}
+
+.mural-botao-enviar {
+    background: #1F4B43;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 999px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.mural-botao-enviar:hover {
+    background: #163a33;
+}
+
+.aviso-form {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    text-align: left;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.aviso-form-campo {
+    margin-bottom: 16px;
+}
+
+.aviso-form-campo label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1F4B43;
+}
+
+.aviso-form-campo input,
+.aviso-form-campo textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.aviso-form-campo textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.aviso-form-erro {
+    color: #c0392b;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.aviso-form-botao {
+    background: #1F4B43;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.aviso-form-botao:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.aviso-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    text-align: left;
+    margin-top: 24px;
+}
+
+.aviso-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e7e6e2;
+}
+
+.aviso-card.fixado {
+    border-color: #1F4B43;
+}
+
+.aviso-fixado-badge {
+    display: inline-block;
+    font-size: 12px;
+    color: #1F4B43;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.aviso-card h3 {
+    margin: 0 0 8px;
+    color: #1F4B43;
+}
+
+.aviso-card p {
+    margin: 0 0 12px;
+    color: #444;
+    font-size: 14px;
+    white-space: pre-wrap;
+}
+
+.aviso-card small {
+    color: #888;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.aviso-card-acoes {
+    display: flex;
+    gap: 8px;
+}
+
+.aviso-card-acoes button {
+    font-size: 13px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #f9f9f7;
+    color: #1a1a1a;
+    color-scheme: light;
+    cursor: pointer;
+}
+
+
+.aviso-card-acoes button:hover {
+    background: #eee;
+}
+
+.aviso-form-campo input,
+.aviso-form-campo textarea {
+    background: #fff;
+    color: #1a1a1a;
+    color-scheme: light;
+}

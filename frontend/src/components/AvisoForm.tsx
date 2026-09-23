@@ -28,8 +28,8 @@ export function AvisoForm({ onAvisoCriado }: AvisoFormProps) {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
+        <form className="aviso-form" onSubmit={handleSubmit}>
+            <div className="aviso-form-campo">
                 <label htmlFor="titulo">Título</label>
                 <input
                     id="titulo"
@@ -39,7 +39,7 @@ export function AvisoForm({ onAvisoCriado }: AvisoFormProps) {
                     required
                 />
             </div>
-            <div>
+            <div className="aviso-form-campo">
                 <label htmlFor="conteudo">Conteúdo</label>
                 <textarea
                     id="conteudo"
@@ -48,8 +48,8 @@ export function AvisoForm({ onAvisoCriado }: AvisoFormProps) {
                     required
                 />
             </div>
-            {erro && <p role="alert">{erro}</p>}
-            <button type="submit" disabled={enviando}>
+            {erro && <p className="aviso-form-erro" role="alert">{erro}</p>}
+            <button type="submit" className="aviso-form-botao" disabled={enviando}>
                 {enviando ? 'Publicando...' : 'Publicar aviso'}
             </button>
         </form>

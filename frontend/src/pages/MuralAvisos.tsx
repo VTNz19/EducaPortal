@@ -3,10 +3,14 @@ import type { Aviso } from '../api/avisos'
 import { listarAvisos } from '../api/avisos'
 import { AvisoForm } from '../components/AvisoForm'
 import { AvisoList } from '../components/AvisoList'
+import { useAuth } from '../context/AuthContext'
+import './MuralAvisos.css'
 
 export function MuralAvisos() {
     const [avisos, setAvisos] = useState<Aviso[]>([])
     const [carregando, setCarregando] = useState(true)
+    const [mostrarForm, setMostrarForm] = useState(false)
+    const { usuario, logout } = useAuth()
 
     async function carregarAvisos() {
         setCarregando(true)
@@ -19,11 +23,50 @@ export function MuralAvisos() {
         carregarAvisos()
     }, [])
 
+    const podePublicar = usuario?.role === 'admin' || usuario?.role === 'professor'
+
+    function handleAvisoCriado() {
+        setMostrarForm(false)
+        carregarAvisos()
+    }
+
     return (
-        <main>
-            <h1>Mural de Avisos</h1>
-            <AvisoForm onAvisoCriado={carregarAvisos} />
-            {carregando ? <p>Carregando avisos...</p> : <AvisoList avisos={avisos} onAvisoAtualizado={carregarAvisos} />}
-        </main>
+        <div className="mural-page">
+            <header className="mural-topbar">
+                <span className="mural-logo">🎓 EducaPortal</span>
+                <div className="mural-topbar-usuario">
+                    {usuario && <span>{usuario.nome}</span>}
+                    <button type="button" onClick={logout}>Sair</button>
+                </div>
+            </header>
+
+            <main className="mural-conteudo">
+                <h1>Mural de Avisos</h1>
+
+                {podePublicar && (
+                    <div className="mural-acoes">
+                        <button
+                            type="button"
+                            className="mural-botao-enviar"
+                            onClick={() => setMostrarForm((valor) => !valor)}
+                        >
+                            {mostrarForm ? 'Cancelar' : 'Enviar aviso'}
+                        </button>
+                    </div>
+                )}
+
+                {mostrarForm && <AvisoForm onAvisoCriado={handleAvisoCriado} />}
+
+                {carregando ? (
+                    <p>Carregando avisos...</p>
+                ) : (
+                    <AvisoList
+                        avisos={avisos}
+                        onAvisoAtualizado={carregarAvisos}
+                        podeGerenciar={podePublicar}
+                    />
+                )}
+            </main>
+        </div>
     )
 }

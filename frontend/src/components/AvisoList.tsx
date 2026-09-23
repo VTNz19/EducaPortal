@@ -4,9 +4,10 @@ import { alternarFixado, excluirAviso } from '../api/avisos'
 interface AvisoListProps {
     avisos: Aviso[]
     onAvisoAtualizado: () => void
+    podeGerenciar: boolean
 }
 
-export function AvisoList({ avisos, onAvisoAtualizado }: AvisoListProps) {
+export function AvisoList({ avisos, onAvisoAtualizado, podeGerenciar }: AvisoListProps) {
     async function handleExcluir(id: number) {
         await excluirAviso(id)
         onAvisoAtualizado()
@@ -22,21 +23,25 @@ export function AvisoList({ avisos, onAvisoAtualizado }: AvisoListProps) {
     }
 
     return (
-        <ul>
+        <div className="aviso-grid">
             {avisos.map((aviso) => (
-                <li key={aviso.id}>
-                    {aviso.fixado && <strong>📌 Fixado</strong>}
+                <div key={aviso.id} className={`aviso-card${aviso.fixado ? ' fixado' : ''}`}>
+                    {aviso.fixado && <span className="aviso-fixado-badge">📌 Fixado</span>}
                     <h3>{aviso.titulo}</h3>
                     <p>{aviso.conteudo}</p>
                     <small>{new Date(aviso.criado_em).toLocaleString('pt-BR')}</small>
-                    <button type="button" onClick={() => handleAlternarFixado(aviso)}>
-                        {aviso.fixado ? 'Desafixar' : 'Fixar'}
-                    </button>
-                    <button type="button" onClick={() => handleExcluir(aviso.id)}>
-                        Excluir
-                    </button>
-                </li>
+                    {podeGerenciar && (
+                        <div className="aviso-card-acoes">
+                            <button type="button" onClick={() => handleAlternarFixado(aviso)}>
+                                {aviso.fixado ? 'Desafixar' : 'Fixar'}
+                            </button>
+                            <button type="button" onClick={() => handleExcluir(aviso.id)}>
+                                Excluir
+                            </button>
+                        </div>
+                    )}
+                </div>
             ))}
-        </ul>
+        </div>
     )
 }
