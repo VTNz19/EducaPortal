@@ -1,13 +1,16 @@
 import api from './client'
 
 export interface Aviso {
-    id: number;
+    id: number
     titulo: string
     conteudo: string
+    autor: number | null
+    autor_nome: string | null
     fixado: boolean
     criado_em: string
     atualizado_em: string
 }
+
 
 export async function listarAvisos(): Promise<Aviso[]> {
     const response = await api.get('/avisos/')

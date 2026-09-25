@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import './PaginaInicial.css'
+import { RodapeLegal } from '../components/RodapeLegal'
+
 
 export function PaginaInicial() {
     return (
@@ -18,6 +20,7 @@ export function PaginaInicial() {
                     responsáveis — numa única plataforma web.
                 </p>
             </main>
+            <RodapeLegal />
         </div>
     )
 }

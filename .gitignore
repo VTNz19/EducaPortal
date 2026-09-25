@@ -12,3 +12,6 @@ frontend/dist/
 # Editor/OS
 .vscode/
 .DS_Store
+
+# Documentos pessoais (monografia, ficha com RGM)
+*.docx

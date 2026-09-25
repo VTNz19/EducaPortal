@@ -70,3 +70,81 @@
     background: #f4f5f2;
     color: #1F4B43;
 }
+
+.legal-page table {
+    display: block;
+    overflow-x: auto;
+}
+
+.legal-page code {
+    background: #f4f5f2;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.legal-page strong {
+    color: #1a1a1a;
+}
+.aceite-intro {
+    margin: 0 0 16px;
+}
+
+.aceite-documento {
+    max-height: 55vh;
+    overflow-y: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0 20px;
+    background: #fafaf8;
+}
+
+.aceite-confirmacao {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 20px 0 12px;
+    font-size: 15px;
+}
+
+.aceite-confirmacao input {
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+}
+
+.aceite-erro {
+    color: #c0392b;
+    font-size: 14px;
+}
+
+.aceite-acoes {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.aceite-botao {
+    background: #1F4B43;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.aceite-botao:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.aceite-sair {
+    background: transparent;
+    color: #1F4B43;
+    border: 1px solid #1F4B43;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+}

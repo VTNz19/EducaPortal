@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { Aviso } from '../api/avisos'
 import { listarAvisos } from '../api/avisos'
 import { AvisoForm } from '../components/AvisoForm'
 import { AvisoList } from '../components/AvisoList'
 import { useAuth } from '../context/AuthContext'
 import './MuralAvisos.css'
+import { RodapeLegal } from '../components/RodapeLegal'
+
 
 export function MuralAvisos() {
     const [avisos, setAvisos] = useState<Aviso[]>([])
@@ -23,7 +26,13 @@ export function MuralAvisos() {
         carregarAvisos()
     }, [])
 
-    const podePublicar = usuario?.role === 'admin' || usuario?.role === 'professor'
+    const ehGestor = usuario?.role === 'secretaria' || usuario?.role === 'direcao'
+    const podePublicar = ehGestor || usuario?.role === 'professor'
+
+    // Só controla quais botões aparecem. Quem realmente bloqueia é o back-end.
+    function podeGerenciar(aviso: Aviso) {
+        return ehGestor || (usuario?.role === 'professor' && aviso.autor === usuario?.id)
+    }
 
     function handleAvisoCriado() {
         setMostrarForm(false)
@@ -35,6 +44,9 @@ export function MuralAvisos() {
             <header className="mural-topbar">
                 <span className="mural-logo">🎓 EducaPortal</span>
                 <div className="mural-topbar-usuario">
+                    {ehGestor && (
+                        <Link to="/secretaria" className="mural-topbar-link">Painel da secretaria</Link>
+                    )}
                     {usuario && <span>{usuario.nome}</span>}
                     <button type="button" onClick={logout}>Sair</button>
                 </div>
@@ -63,10 +75,11 @@ export function MuralAvisos() {
                     <AvisoList
                         avisos={avisos}
                         onAvisoAtualizado={carregarAvisos}
-                        podeGerenciar={podePublicar}
+                        podeGerenciar={podeGerenciar}
                     />
                 )}
             </main>
+            <RodapeLegal />
         </div>
     )
 }

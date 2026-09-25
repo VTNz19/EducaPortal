@@ -1,0 +1,14 @@
+.rodape-legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 24px;
+    padding: 20px 24px;
+    border-top: 1px solid #e0e0e0;
+    background: #fff;
+    font-size: 13px;
+}
+
+.rodape-legal a {
+    color: #1F4B43;
+}

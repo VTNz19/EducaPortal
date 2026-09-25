@@ -4,7 +4,29 @@ import { Link } from 'react-router-dom'
 import { solicitarRedefinicaoSenha } from '../api/senha'
 import './Login.css'
 
-export function EsqueciSenha() {
+interface EsqueciSenhaProps {
+    primeiroAcesso?: boolean
+}
+
+const TEXTOS = {
+    redefinir: {
+        tituloLateral: 'Esqueceu sua senha?',
+        descricao: 'Informe seu e-mail cadastrado e enviaremos um link para você criar uma nova senha.',
+        titulo: 'Recuperar senha',
+        botao: 'Enviar link de redefinição',
+        enviado: 'Se esse e-mail estiver cadastrado, você vai receber um link de redefinição em instantes. Confere sua caixa de entrada (e o spam).',
+    },
+    primeiroAcesso: {
+        tituloLateral: 'Primeiro acesso',
+        descricao: 'Sua conta foi criada pela secretaria da escola. Informe seu e-mail e enviaremos um link para você criar sua senha.',
+        titulo: 'Criar minha senha',
+        botao: 'Enviar link de acesso',
+        enviado: 'Se esse e-mail estiver cadastrado, você vai receber um link para criar sua senha em instantes. Confere sua caixa de entrada (e o spam).',
+    },
+}
+
+export function EsqueciSenha({ primeiroAcesso = false }: EsqueciSenhaProps) {
+    const textos = primeiroAcesso ? TEXTOS.primeiroAcesso : TEXTOS.redefinir
     const [email, setEmail] = useState('')
     const [enviando, setEnviando] = useState(false)
     const [enviado, setEnviado] = useState(false)
@@ -28,19 +50,16 @@ export function EsqueciSenha() {
         <div className="login-page">
             <aside className="login-brand">
                 <span className="login-brand-logo">🎓 EducaPortal</span>
-                <h1>Esqueceu sua senha?</h1>
-                <p>Informe seu e-mail cadastrado e enviaremos um link para você criar uma nova senha.</p>
+                <h1>{textos.tituloLateral}</h1>
+                <p>{textos.descricao}</p>
             </aside>
 
             <section className="login-form-side">
                 <div className="login-form-card">
-                    <h2>Recuperar senha</h2>
+                    <h2>{textos.titulo}</h2>
 
                     {enviado ? (
-                        <p className="login-subtitulo">
-                            Se esse e-mail estiver cadastrado, você vai receber um link de
-                            redefinição em instantes. Confere sua caixa de entrada (e o spam).
-                        </p>
+                        <p className="login-subtitulo">{textos.enviado}</p>
                     ) : (
                         <form onSubmit={handleSubmit} noValidate>
                             {erro && <p className="login-erro-geral" role="alert">{erro}</p>}
@@ -57,7 +76,7 @@ export function EsqueciSenha() {
                             </div>
 
                             <button type="submit" className="login-submit" disabled={enviando}>
-                                {enviando ? 'Enviando...' : 'Enviar link de redefinição'}
+                                {enviando ? 'Enviando...' : textos.botao}
                             </button>
                         </form>
                     )}

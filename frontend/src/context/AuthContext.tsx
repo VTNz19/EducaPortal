@@ -2,12 +2,16 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import api, { setAccessToken, REFRESH_TOKEN_KEY } from '../api/client'
 
+export type Papel = 'secretaria' | 'direcao' | 'professor' | 'aluno' | 'responsavel'
+
 export interface Usuario {
     id: number
     username: string
     email: string
     nome: string
-    role: 'admin' | 'professor' | 'aluno'
+    role: Papel
+    precisa_aceitar_termos: boolean
+    versao_termos_atual: string
 }
 
 interface AuthContextData {
@@ -15,6 +19,7 @@ interface AuthContextData {
     carregando: boolean
     login: (email: string, senha: string) => Promise<void>
     logout: () => void
+    aceitarTermos: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined)
@@ -49,10 +54,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const response = await api.post('/auth/login/', { email, password: senha })
         const { access, refresh } = response.data
         setAccessToken(access)
-        // Limitação de segurança: o ideal seria um cookie httpOnly para o
-        // refresh token (inacessível a JavaScript, mais resistente a XSS).
-        // Aqui usamos localStorage por simplicidade, já que o back-end
-        // ainda não expõe um endpoint que defina cookies httpOnly.
         localStorage.setItem(REFRESH_TOKEN_KEY, refresh)
         await carregarUsuarioAtual()
     }
@@ -63,8 +64,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUsuario(null)
     }
 
+    async function aceitarTermos() {
+        if (!usuario) return
+        const response = await api.post('/auth/aceitar-termos/', { versao: usuario.versao_termos_atual })
+        setUsuario(response.data)
+    }
+
     return (
-        <AuthContext.Provider value={{ usuario, carregando, login, logout }}>
+        <AuthContext.Provider value={{ usuario, carregando, login, logout, aceitarTermos }}>
             {children}
         </AuthContext.Provider>
     )

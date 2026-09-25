@@ -102,20 +102,23 @@ export function Login() {
                             {enviando ? 'Entrando...' : 'Entrar'}
                         </button>
 
-                        <Link to="/esqueci-senha" className="login-esqueci-senha">
-                            Esqueci minha senha
-                        </Link>
+                        <div className="login-links">
+                            <Link to="/primeiro-acesso">Primeiro acesso</Link>
+                            <Link to="/esqueci-senha">Esqueci minha senha</Link>
+                        </div>
                     </form>
 
                     <div className="login-perfis">
                         <strong>Perfis de acesso:</strong>
                         <ul>
-                            <li>Administrador</li>
+                            <li>Secretaria</li>
+                            <li>Direção</li>
                             <li>Professor</li>
-                            <li>Aluno/Responsável</li>
+                            <li>Aluno</li>
+                            <li>Responsável</li>
                         </ul>
                         <div className="login-rodape-links">
-                            <Link to="/termo-de-uso">Termo de uso</Link>
+                            <Link to="/termo-de-uso">Termo de Uso e Aceite</Link>
                             <Link to="/politica-de-privacidade">Política de privacidade</Link>
                         </div>
                     </div>

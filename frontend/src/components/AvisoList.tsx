@@ -4,7 +4,7 @@ import { alternarFixado, excluirAviso } from '../api/avisos'
 interface AvisoListProps {
     avisos: Aviso[]
     onAvisoAtualizado: () => void
-    podeGerenciar: boolean
+    podeGerenciar: (aviso: Aviso) => boolean
 }
 
 export function AvisoList({ avisos, onAvisoAtualizado, podeGerenciar }: AvisoListProps) {
@@ -29,8 +29,11 @@ export function AvisoList({ avisos, onAvisoAtualizado, podeGerenciar }: AvisoLis
                     {aviso.fixado && <span className="aviso-fixado-badge">📌 Fixado</span>}
                     <h3>{aviso.titulo}</h3>
                     <p>{aviso.conteudo}</p>
-                    <small>{new Date(aviso.criado_em).toLocaleString('pt-BR')}</small>
-                    {podeGerenciar && (
+                    <small>
+                        {aviso.autor_nome && `Por ${aviso.autor_nome} · `}
+                        {new Date(aviso.criado_em).toLocaleString('pt-BR')}
+                    </small>
+                    {podeGerenciar(aviso) && (
                         <div className="aviso-card-acoes">
                             <button type="button" onClick={() => handleAlternarFixado(aviso)}>
                                 {aviso.fixado ? 'Desafixar' : 'Fixar'}

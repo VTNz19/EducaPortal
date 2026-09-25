@@ -159,3 +159,14 @@
         padding: 32px;
     }
 }
+
+.login-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+.login-links a {
+    color: #1F4B43;
+}

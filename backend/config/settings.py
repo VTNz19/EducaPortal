@@ -83,6 +83,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.ScryptPasswordHasher',
+]
+
+
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
@@ -114,5 +122,10 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS', 'http://localhost:5173'
 ).split(',')
 
-RESEND_API_KEY = os.environ.get('RESEND_API_KEY', '')
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
+EMAIL_REMETENTE = os.environ.get('EMAIL_REMETENTE', '')
+EMAIL_REMETENTE_NOME = os.environ.get('EMAIL_REMETENTE_NOME', 'EducaPortal')
+
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+
+VERSAO_TERMOS = '2.0'
