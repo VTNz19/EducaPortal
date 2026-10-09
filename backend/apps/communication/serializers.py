@@ -10,6 +10,10 @@ class AvisoSerializer(serializers.ModelSerializer):
         model = Aviso
         fields = ['id', 'titulo', 'conteudo', 'autor', 'autor_nome', 'criado_em', 'atualizado_em', 'fixado']
         read_only_fields = ['id', 'autor', 'criado_em', 'atualizado_em']
+        extra_kwargs = {
+            'titulo': {'error_messages': {'blank': 'O título não pode ser vazio.'}},
+            'conteudo': {'error_messages': {'blank': 'O conteúdo não pode ser vazio.'}},
+        }
 
     def get_autor_nome(self, obj):
         if obj.autor is None:
@@ -25,3 +29,4 @@ class AvisoSerializer(serializers.ModelSerializer):
         if not value.strip():
             raise serializers.ValidationError('O conteúdo não pode ser vazio.')
         return value
+
