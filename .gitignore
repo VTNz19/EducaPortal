@@ -13,5 +13,5 @@ frontend/dist/
 .vscode/
 .DS_Store
 
-# Documentos pessoais (monografia, ficha com RGM)
+# Documentos pessoais 
 *.docx
