@@ -65,15 +65,41 @@ Principais documentos em [docs/](docs/):
 
 ### 1. Banco de dados
 
+Gere senhas fortes com `python -c "import secrets; print(secrets.token_urlsafe(30))"`.
+A primeira é a do administrador do banco (`educaportal_app`), usada só para manutenção:
+
 ```bash
 docker run -d --name educaportal-db \
-  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_USER=educaportal_app \
+  -e POSTGRES_PASSWORD=<senha-forte> \
   -e POSTGRES_DB=educaportal \
   -p 127.0.0.1:5432:5432 \
+  -v educaportal-pgdata:/var/lib/postgresql/data \
   postgres:16
 ```
 
-Essa senha é apenas para uso local. Em produção, use uma senha própria.
+Depois, crie o usuário que a aplicação usa, sem permissões de administrador, e ligue o
+registro de conexões. Use uma segunda senha forte e coloque-a em `DB_PASSWORD`, no `.env`:
+
+```bash
+docker exec -it educaportal-db psql -U educaportal_app -d educaportal -c "
+  CREATE ROLE educaportal_django LOGIN PASSWORD '<segunda-senha-forte>';
+  ALTER DATABASE educaportal OWNER TO educaportal_django;
+  ALTER SCHEMA public OWNER TO educaportal_django;
+  ALTER SYSTEM SET log_connections = on;
+  ALTER SYSTEM SET log_disconnections = on;
+  ALTER SYSTEM SET log_statement = 'ddl';
+  ALTER SYSTEM SET log_line_prefix = '%m [%p] %q%u@%d from %h ';
+  SELECT pg_reload_conf();"
+```
+
+**Segurança:** mantenha o `127.0.0.1:` na opção `-p`. Sem ele, o Docker publica o
+banco para toda a rede e robôs da internet tentam entrar com senhas comuns, como
+`postgres`. Isso já aconteceu com este projeto em novembro de 2026.
+
+Para popular o banco com dados fictícios de demonstração (contas `@exemplo.com`,
+turmas, notas, chamadas e avisos), rode depois das migrações:
+`python manage.py criar_dados_demo`.
 
 ### 2. Back-end
 
@@ -90,7 +116,9 @@ Edite o arquivo `.env` e preencha, no mínimo:
 
 | Variável | Descrição |
 |---|---|
-| `DJANGO_SECRET_KEY` | Chave secreta longa e aleatória (substitua o valor `change-me`) |
+| `DJANGO_SECRET_KEY` | Chave secreta longa e aleatória. Sem ela o servidor não sobe |
+| `DJANGO_DEBUG` | `True` só no desenvolvimento local. O padrão é `False` |
+| `DB_PASSWORD` | Senha do usuário `educaportal_django` criado no passo 1 |
 | `BREVO_API_KEY` | Chave da API do Brevo, usada para enviar os e-mails |
 | `EMAIL_REMETENTE` | Remetente verificado no Brevo |
 

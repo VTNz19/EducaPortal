@@ -2,15 +2,19 @@ from datetime import timedelta
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / '.env')
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-production')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
+if not SECRET_KEY or SECRET_KEY == 'change-me':
+    raise ImproperlyConfigured('Defina DJANGO_SECRET_KEY no arquivo .env com um valor longo e aleatório.')
 
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
@@ -27,6 +31,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.communication',
     'apps.audit',
+    'apps.academic',
 ]
 
 
@@ -69,9 +74,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('DB_NAME', 'educaportal'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'USER': os.environ.get('DB_USER', 'educaportal_django'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
@@ -109,11 +114,15 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_THROTTLE_RATES': {
+        'login': '10/min',
+        'senha': '5/min',
+    },
 }
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(hours=8),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
@@ -121,6 +130,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS', 'http://localhost:5173'
 ).split(',')
+CORS_EXPOSE_HEADERS = ['Content-Disposition']
 
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '')
 EMAIL_REMETENTE = os.environ.get('EMAIL_REMETENTE', '')
@@ -128,4 +138,4 @@ EMAIL_REMETENTE_NOME = os.environ.get('EMAIL_REMETENTE_NOME', 'EducaPortal')
 
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
 
-VERSAO_TERMOS = '2.0'
+VERSAO_TERMOS = '2.1'
