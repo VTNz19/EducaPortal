@@ -54,3 +54,27 @@ def enviar_link_definir_senha(usuario, primeiro_acesso=False):
         )
 
     enviar_email(usuario.email, assunto, corpo)
+
+
+def enviar_email_em_lote(destinatarios, assunto, html):
+    """Envia o mesmo e-mail a vários destinatários em uma única chamada ao Brevo.
+
+    Cada destinatário recebe uma mensagem própria (messageVersions), sem ver os
+    demais endereços. Lança exceção se o envio falhar.
+    """
+    destinatarios = sorted(set(destinatarios))
+    if not destinatarios:
+        return
+    resposta = requests.post(
+        BREVO_URL,
+        headers={'api-key': settings.BREVO_API_KEY, 'accept': 'application/json'},
+        json={
+            'sender': {'name': settings.EMAIL_REMETENTE_NOME, 'email': settings.EMAIL_REMETENTE},
+            'subject': assunto,
+            'htmlContent': html,
+            'messageVersions': [{'to': [{'email': email}]} for email in destinatarios],
+        },
+        timeout=10,
+    )
+    if resposta.status_code >= 400:
+        raise RuntimeError(f'Brevo respondeu {resposta.status_code}: {resposta.text}')

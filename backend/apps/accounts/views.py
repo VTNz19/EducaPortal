@@ -1,19 +1,23 @@
 from django.conf import settings
+from django.db.models import OuterRef, Q, Subquery
 from django.utils import timezone
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import RetrieveAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from apps.academic.models import Matricula
 from apps.audit.models import AuditLog
 from apps.audit.serializers import AuditLogSerializer
 from apps.audit.utils import registrar_log
 from .emails import enviar_link_definir_senha
 from .models import PasswordResetToken, User
-from .permissions import AceitouTermosVigentes, IsGestor
+from .permissions import AceitouTermosVigentes, IsDirecao, IsGestor
 from .serializers import (
     CriarUsuarioSerializer,
     CustomTokenObtainPairSerializer,
@@ -27,20 +31,26 @@ from .serializers import (
 LIMITE_LOGS_NA_TELA = 200
 
 
+class PaginacaoUsuarios(PageNumberPagination):
+    """20 contas por página (RNF05); as listas de seleção da secretaria pedem mais com ?page_size=."""
+
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 500
+
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'login'
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email', '')
-        # Quando o e-mail existe, a tentativa fica ligada à conta, inclusive
-        # nas falhas, para aparecer no histórico da pessoa.
         usuario = User.objects.filter(email=email).first()
 
         try:
             response = super().post(request, *args, **kwargs)
         except Exception:
-            # Com senha errada o simplejwt lança exceção em vez de devolver
-            # uma resposta; registramos a falha e deixamos o DRF responder 401.
             registrar_log(usuario, 'login_falha', detalhes=f'tentativa de login: {email}', request=request)
             raise
 
@@ -75,9 +85,10 @@ class AceitarTermosView(APIView):
         return Response(MeSerializer(usuario).data)
 
 
-
 class EsqueciSenhaView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'senha'
 
     def post(self, request):
         serializer = EsqueciSenhaSerializer(data=request.data)
@@ -87,8 +98,6 @@ class EsqueciSenhaView(APIView):
         usuario = User.objects.filter(email=email).first()
         if usuario:
             try:
-                # Quem ainda não criou senha (conta feita pela secretaria)
-                # recebe o e-mail de primeiro acesso, não o de redefinição.
                 enviar_link_definir_senha(usuario, primeiro_acesso=not usuario.has_usable_password())
             except Exception as erro:
                 registrar_log(usuario, 'esqueci_senha_falha_envio', detalhes=f'erro: {erro}', request=request)
@@ -98,13 +107,13 @@ class EsqueciSenhaView(APIView):
                 )
             registrar_log(usuario, 'esqueci_senha_solicitado', request=request)
 
-        # Sempre retorna sucesso, mesmo se o e-mail não existir no sistema,
-        # para não revelar quais e-mails estão cadastrados.
         return Response({'detail': 'Se o e-mail existir, enviamos um link de redefinição.'})
 
 
 class RedefinirSenhaView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'senha'
 
     def post(self, request):
         serializer = RedefinirSenhaSerializer(data=request.data)
@@ -115,7 +124,6 @@ class RedefinirSenhaView(APIView):
         reset_token = PasswordResetToken.objects.filter(token=token_valor).first()
 
         if not reset_token or not reset_token.esta_valido():
-            # O token não vai para o log: o guia da LGPD proíbe gravar tokens.
             registrar_log(None, 'redefinir_senha_falha', detalhes='token inválido ou expirado', request=request)
             return Response({'detail': 'Token inválido ou expirado.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -140,7 +148,25 @@ class UsuarioViewSet(
     """Contas de usuários, gerenciadas pela secretaria e pela direção."""
 
     permission_classes = [IsAuthenticated, AceitouTermosVigentes, IsGestor]
-    queryset = User.objects.order_by('first_name', 'last_name')
+    pagination_class = PaginacaoUsuarios
+
+    def get_queryset(self):
+        turma_ativa = Matricula.objects.filter(aluno=OuterRef('pk'), situacao=Matricula.Situacao.ATIVA)
+        qs = User.objects.annotate(
+            turma_atual=Subquery(turma_ativa.values('turma__nome')[:1]),
+        ).order_by('first_name', 'last_name')
+
+        params = self.request.query_params
+        busca = params.get('busca', '').strip()
+        if busca:
+            qs = qs.filter(Q(first_name__icontains=busca) | Q(last_name__icontains=busca) | Q(email__icontains=busca))
+        if params.get('role'):
+            qs = qs.filter(role=params['role'])
+        if params.get('turma'):
+            qs = qs.filter(matriculas__turma_id=params['turma'], matriculas__situacao=Matricula.Situacao.ATIVA)
+        if params.get('ativo') in ('true', 'false'):
+            qs = qs.filter(is_active=params['ativo'] == 'true')
+        return qs
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -157,6 +183,12 @@ class UsuarioViewSet(
             request.user, 'usuario_criado',
             detalhes=f'usuario id={usuario.id}, papel={usuario.role}', request=request,
         )
+        for matricula in usuario.matriculas.all():
+            registrar_log(request.user, 'matricula_criada',
+                          detalhes=f'aluno id={usuario.id}, turma id={matricula.turma_id}', request=request)
+        for vinculo in usuario.vinculos_como_aluno.all():
+            registrar_log(request.user, 'vinculo_criado',
+                          detalhes=f'responsavel id={vinculo.responsavel_id}, aluno id={usuario.id}', request=request)
 
         email_enviado = True
         try:
@@ -168,17 +200,19 @@ class UsuarioViewSet(
                 detalhes=f'usuario id={usuario.id} | erro: {erro}', request=request,
             )
 
-        dados = UsuarioListaSerializer(usuario).data
+        dados = UsuarioListaSerializer(self.get_queryset().get(pk=usuario.pk)).data
         dados['email_enviado'] = email_enviado
         return Response(dados, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['get'])
+    SOMENTE_DIRECAO = [IsAuthenticated, AceitouTermosVigentes, IsDirecao]
+
+    @action(detail=True, methods=['get'], permission_classes=SOMENTE_DIRECAO)
     def logs(self, request, pk=None):
         usuario = self.get_object()
         logs = AuditLog.objects.filter(usuario=usuario).order_by('-criado_em')[:LIMITE_LOGS_NA_TELA]
         return Response(AuditLogSerializer(logs, many=True).data)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get'], permission_classes=SOMENTE_DIRECAO)
     def exportar(self, request, pk=None):
         usuario = self.get_object()
         logs = AuditLog.objects.filter(usuario=usuario).order_by('-criado_em')

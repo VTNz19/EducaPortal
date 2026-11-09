@@ -44,3 +44,12 @@ def cliente_autenticado(api_client):
         return api_client
 
     return _autenticar
+
+
+@pytest.fixture(autouse=True)
+def limpar_limite_de_tentativas():
+    """Zera os contadores de tentativas (throttling) para um teste não afetar o outro."""
+    from django.core.cache import cache
+    cache.clear()
+    yield
+    cache.clear()

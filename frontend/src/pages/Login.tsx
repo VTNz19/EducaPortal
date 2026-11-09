@@ -39,7 +39,7 @@ export function Login() {
         setEnviando(true)
         try {
             await login(email, senha)
-            navigate('/mural')
+            navigate('/painel')
         } catch {
             setErroGeral('E-mail ou senha inválidos.')
         } finally {

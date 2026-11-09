@@ -14,13 +14,32 @@ export interface UsuarioResumo {
     nome: string
     email: string
     role: Papel
+    turma: string | null
     is_active: boolean
     date_joined: string
+}
+
+export interface MatriculaResumo {
+    id: number
+    turma_id: number
+    turma: string
+    ano: number
+    situacao: 'ativa' | 'transferida' | 'encerrada'
+    data_inicio: string
+    data_fim: string | null
+}
+
+export interface PessoaVinculada {
+    id: number
+    nome: string
+    email: string
 }
 
 export interface UsuarioDetalhe extends UsuarioResumo {
     first_name: string
     last_name: string
+    matriculas: MatriculaResumo[]
+    vinculos: PessoaVinculada[]
 }
 
 export interface NovoUsuario {
@@ -28,6 +47,21 @@ export interface NovoUsuario {
     last_name: string
     email: string
     role: 'aluno' | 'responsavel' | 'professor'
+    turma?: number | null
+    responsaveis?: number[]
+}
+
+export interface FiltrosUsuarios {
+    busca?: string
+    role?: string
+    turma?: number | ''
+    ativo?: 'true' | 'false' | ''
+    page_size?: number
+}
+
+export interface PaginaUsuarios {
+    total: number
+    usuarios: UsuarioResumo[]
 }
 
 export interface UsuarioCriado extends UsuarioResumo {
@@ -49,9 +83,14 @@ export interface ExportacaoUsuario {
     logs: RegistroLog[]
 }
 
-export async function listarUsuarios(): Promise<UsuarioResumo[]> {
-    const response = await api.get('/usuarios/')
-    return response.data.results ?? response.data
+export async function listarUsuarios(filtros: FiltrosUsuarios = {}): Promise<PaginaUsuarios> {
+    const params = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== '' && v !== undefined))
+    const response = await api.get('/usuarios/', { params })
+    return { total: response.data.count ?? response.data.length, usuarios: response.data.results ?? response.data }
+}
+
+export async function listarPorPerfil(role: string): Promise<UsuarioResumo[]> {
+    return (await listarUsuarios({ role, ativo: 'true', page_size: 500 })).usuarios
 }
 
 export async function criarUsuario(dados: NovoUsuario): Promise<UsuarioCriado> {

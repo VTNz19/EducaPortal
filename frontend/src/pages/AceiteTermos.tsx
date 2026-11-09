@@ -18,7 +18,7 @@ export function AceiteTermos() {
         return <Navigate to="/login" replace />
     }
     if (!usuario.precisa_aceitar_termos) {
-        return <Navigate to="/mural" replace />
+        return <Navigate to="/painel" replace />
     }
 
     async function handleAceitar() {
