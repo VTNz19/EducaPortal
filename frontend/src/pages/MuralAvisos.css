@@ -205,3 +205,83 @@
     font-size: 14px;
     text-decoration: underline;
 }
+
+.mural-topbar {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.mural-topbar-usuario {
+    flex-wrap: wrap;
+}
+
+.mural-topbar-link.active {
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid #f5f5f0;
+}
+
+.aviso-form-linha {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.aviso-form-campo select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 15px;
+    background: #fff;
+}
+
+.aviso-form-opcao {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    text-align: left;
+    font-size: 14px;
+    margin: 4px 0 12px;
+}
+
+.aviso-form-botoes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.aviso-form-cancelar {
+    background: #fff;
+    border: 1px solid #1F4B43;
+    color: #1F4B43;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.aviso-etiquetas {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.aviso-etiqueta {
+    font-size: 12px;
+    background: #e8f1ee;
+    color: #1F4B43;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.aviso-etiqueta-alerta {
+    background: #fff6db;
+    color: #7a5b00;
+}
+
+.aviso-card.fora-do-periodo {
+    opacity: 0.75;
+    border-style: dashed;
+}

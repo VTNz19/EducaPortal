@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import type { Aviso } from '../api/avisos'
 import { listarAvisos } from '../api/avisos'
 import { AvisoForm } from '../components/AvisoForm'
+import type { OpcaoTurma } from '../components/AvisoForm'
+import { listarAnosLetivos, listarDisciplinas, listarTurmas } from '../api/academico'
 import { AvisoList } from '../components/AvisoList'
 import { useAuth } from '../context/AuthContext'
 import './MuralAvisos.css'
 import { RodapeLegal } from '../components/RodapeLegal'
+import { TopoPortal } from '../components/TopoPortal'
 
 
 export function MuralAvisos() {
     const [avisos, setAvisos] = useState<Aviso[]>([])
     const [carregando, setCarregando] = useState(true)
     const [mostrarForm, setMostrarForm] = useState(false)
-    const { usuario, logout } = useAuth()
+    const [turmas, setTurmas] = useState<OpcaoTurma[]>([])
+    const { usuario } = useAuth()
 
     async function carregarAvisos() {
         setCarregando(true)
@@ -29,7 +32,20 @@ export function MuralAvisos() {
     const ehGestor = usuario?.role === 'secretaria' || usuario?.role === 'direcao'
     const podePublicar = ehGestor || usuario?.role === 'professor'
 
-    // Só controla quais botões aparecem. Quem realmente bloqueia é o back-end.
+    useEffect(() => {
+        if (usuario?.role === 'professor') {
+            listarDisciplinas().then((disciplinas) => {
+                const unicas = new Map(disciplinas.map((d) => [d.turma, { id: d.turma, nome: d.turma_nome }]))
+                setTurmas([...unicas.values()])
+            })
+        } else if (usuario?.role === 'secretaria' || usuario?.role === 'direcao') {
+            listarAnosLetivos().then(async (anos) => {
+                const atual = anos.find((a) => a.ativo)
+                if (atual) setTurmas((await listarTurmas(atual.id)).map((t) => ({ id: t.id, nome: t.nome })))
+            })
+        }
+    }, [usuario?.role])
+
     function podeGerenciar(aviso: Aviso) {
         return ehGestor || (usuario?.role === 'professor' && aviso.autor === usuario?.id)
     }
@@ -41,16 +57,7 @@ export function MuralAvisos() {
 
     return (
         <div className="mural-page">
-            <header className="mural-topbar">
-                <span className="mural-logo">🎓 EducaPortal</span>
-                <div className="mural-topbar-usuario">
-                    {ehGestor && (
-                        <Link to="/secretaria" className="mural-topbar-link">Painel da secretaria</Link>
-                    )}
-                    {usuario && <span>{usuario.nome}</span>}
-                    <button type="button" onClick={logout}>Sair</button>
-                </div>
-            </header>
+            <TopoPortal />
 
             <main className="mural-conteudo">
                 <h1>Mural de Avisos</h1>
@@ -67,13 +74,14 @@ export function MuralAvisos() {
                     </div>
                 )}
 
-                {mostrarForm && <AvisoForm onAvisoCriado={handleAvisoCriado} />}
+                {mostrarForm && <AvisoForm turmas={turmas} onSalvo={handleAvisoCriado} />}
 
                 {carregando ? (
                     <p>Carregando avisos...</p>
                 ) : (
                     <AvisoList
                         avisos={avisos}
+                        turmas={turmas}
                         onAvisoAtualizado={carregarAvisos}
                         podeGerenciar={podeGerenciar}
                     />

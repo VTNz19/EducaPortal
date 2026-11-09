@@ -1,15 +1,41 @@
+from django.db.models import Q
+from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from apps.accounts.permissions import AceitouTermosVigentes, PodeGerenciarAviso
+from apps.academic.models import Matricula
+from apps.accounts.permissions import GESTORES, AceitouTermosVigentes, PodeGerenciarAviso
 from apps.audit.utils import registrar_log
 from .models import Aviso
+from .notificacoes import notificar_aviso
 from .serializers import AvisoSerializer
 
 
 class AvisoViewSet(viewsets.ModelViewSet):
-    queryset = Aviso.objects.select_related('autor')
     serializer_class = AvisoSerializer
+
+    def get_queryset(self):
+        """RN40: cada perfil vê os avisos gerais e os das suas turmas, dentro do período (RN34).
+
+        Gestores veem tudo; o autor também vê os próprios avisos agendados ou encerrados.
+        """
+        usuario = self.request.user
+        qs = Aviso.objects.select_related('autor', 'turma')
+        if usuario.role in GESTORES:
+            return qs
+
+        if usuario.role == 'professor':
+            turmas = Q(turma__disciplinas__professor=usuario)
+        elif usuario.role == 'aluno':
+            turmas = Q(turma__matriculas__aluno=usuario, turma__matriculas__situacao=Matricula.Situacao.ATIVA)
+        else:
+            turmas = Q(turma__matriculas__aluno__vinculos_como_aluno__responsavel=usuario,
+                       turma__matriculas__situacao=Matricula.Situacao.ATIVA)
+
+        hoje = timezone.localdate()
+        vigente = Q(inicio_exibicao__lte=hoje) & (Q(fim_exibicao__isnull=True) | Q(fim_exibicao__gte=hoje))
+        visiveis = (Q(turma__isnull=True) | turmas) & vigente
+        return qs.filter(visiveis | Q(autor=usuario)).distinct()
 
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
@@ -24,6 +50,8 @@ class AvisoViewSet(viewsets.ModelViewSet):
             detalhes=f'Aviso "{aviso.titulo}" (id={aviso.id})',
             request=self.request,
         )
+        if aviso.notificar_email and aviso.situacao == 'vigente':
+            notificar_aviso(aviso, self.request)
 
     def perform_update(self, serializer):
         aviso = serializer.save()
