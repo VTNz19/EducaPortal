@@ -47,10 +47,10 @@ A coluna "Situação" das tabelas indica o estado de cada item:
 
 | Categoria | Dados | Finalidade | Prazo ou critério | Destino ao final | Situação |
 |---|---|---|---|---|---|
-| Turmas, disciplinas e matrículas | Turma do aluno, disciplinas, professores atribuídos | Organizar o acesso por turma | Durante o ano letivo e por 1 ano letivo após o seu término | Excluir | Previsto |
-| Notas e faltas | Notas, faltas, médias e percentual de frequência calculados | Acompanhamento escolar e emissão do boletim | Durante o vínculo do aluno e por 1 ano letivo após o desligamento | Excluir do EducaPortal | Previsto |
-| Boletim em PDF | Notas, faltas, médias e frequência do aluno | Entrega ao aluno e aos responsáveis | Não é armazenado: o PDF é gerado no servidor no momento do download | Não se aplica | Previsto |
-| Indicadores do painel (dashboard) | Médias e frequência do próprio aluno | Acompanhamento pelo aluno e pelo responsável | Não são armazenados: são calculados a partir das notas e faltas no momento da consulta | Não se aplica | Previsto |
+| Turmas, disciplinas e matrículas | Turma do aluno, disciplinas, professores atribuídos | Organizar o acesso por turma | Durante o ano letivo e por 1 ano letivo após o seu término | Excluir | Registro: implementado. Descarte: previsto |
+| Notas e faltas | Notas, faltas, médias e percentual de frequência calculados | Acompanhamento escolar e emissão do boletim | Durante o vínculo do aluno e por 1 ano letivo após o desligamento | Excluir do EducaPortal | Registro: implementado. Descarte: previsto |
+| Boletim em PDF | Notas, faltas, médias e frequência do aluno | Entrega ao aluno e aos responsáveis | Não é armazenado: o PDF é gerado no servidor no momento do download | Não se aplica | Implementado |
+| Indicadores do painel (dashboard) | Médias e frequência do próprio aluno | Acompanhamento pelo aluno e pelo responsável | Não são armazenados: são calculados a partir das notas e faltas no momento da consulta | Não se aplica | Implementado |
 
 **Sobre notas e faltas:** o EducaPortal não substitui o arquivo oficial da
 escola. A guarda permanente do histórico escolar é responsabilidade da
@@ -62,17 +62,17 @@ prazo acima.
 
 | Categoria | Dados | Finalidade | Prazo ou critério | Destino ao final | Situação |
 |---|---|---|---|---|---|
-| Avisos do mural (gerais ou por turma) | Título, conteúdo, autor, turma | Comunicação escolar | 1 ano após a publicação | Excluir | Mural geral: implementado. Avisos por turma e descarte: previsto |
+| Avisos do mural (gerais ou por turma) | Título, conteúdo, autor, turma | Comunicação escolar | 1 ano após a publicação | Excluir | Mural geral e por turma: implementado. Descarte: previsto |
 | Tarefas | Título, descrição, prazo de entrega, professor, turma | Organizar as atividades da turma | 1 ano após o prazo de entrega da tarefa | Excluir | Previsto |
 | Anexos das tarefas | Arquivos enviados pelo professor | Material de apoio da tarefa | Excluídos junto com a tarefa (1 ano após o prazo de entrega) | Excluir o arquivo do armazenamento | Previsto |
 | Calendário escolar | Eventos (provas, feriados, reuniões), sem dados pessoais | Organização do ano letivo | Até 1 ano após o fim do ano letivo | Excluir | Previsto |
-| E-mails transacionais e notificações | Nome, e-mail, conteúdo da mensagem | Primeiro acesso, recuperação de senha e avisos de novos conteúdos | O EducaPortal não guarda cópia dos e-mails. As notificações não incluem notas nem faltas, só avisam que há algo novo no portal. O Brevo mantém registros de envio conforme a política de privacidade dele | Não se aplica | Primeiro acesso e recuperação de senha: implementado. Notificações: previsto |
+| E-mails transacionais e notificações | Nome, e-mail, conteúdo da mensagem | Primeiro acesso, recuperação de senha e avisos de novos conteúdos | O EducaPortal não guarda cópia dos e-mails. As notificações não incluem notas nem faltas, só avisam que há algo novo no portal. O Brevo mantém registros de envio conforme a política de privacidade dele | Não se aplica | Implementado |
 
 ### 3.4 Atendimento ao titular, infraestrutura e testes
 
 | Categoria | Dados | Finalidade | Prazo ou critério | Destino ao final | Situação |
 |---|---|---|---|---|---|
-| Exportação de dados (JSON) | Dados da conta e histórico de atividades | Atender pedidos de acesso e portabilidade do titular | Não fica armazenada no servidor. O arquivo baixado pela secretaria deve ser entregue ao titular e apagado do computador em até 7 dias | Excluir (procedimento manual) | Implementado |
+| Exportação de dados (JSON) | Dados da conta e histórico de atividades | Atender pedidos de acesso e portabilidade do titular | Não fica armazenada no servidor. O arquivo baixado pela direção deve ser entregue ao titular e apagado do computador em até 7 dias | Excluir (procedimento manual) | Implementado |
 | Cópias de segurança (backups) do banco | Cópia completa do banco de dados, hospedado no Railway | Recuperação em caso de falha | 30 dias. Um dado excluído do sistema desaparece dos backups em até 30 dias | Sobrescrever | Previsto (ambiente de produção) |
 | Registros de acesso da hospedagem | Endereço IP e data e hora das requisições, registrados pelo Railway e pela Vercel | Funcionamento e segurança da infraestrutura | Conforme a política de privacidade de cada provedor | Excluídos pelos provedores | Previsto (ambiente de produção) |
 | Dados de demonstração | Contas e conteúdos fictícios | Testes acadêmicos | Somente durante o projeto | Excluir ao final do projeto | Implementado |
@@ -118,10 +118,10 @@ pedir a exclusão dos seus dados antes do fim do prazo:
 
 | Quem | Responsabilidade |
 |---|---|
-| Secretaria | Desativar as contas de pessoas desligadas, atender pedidos dos titulares e apagar os arquivos de exportação após a entrega |
+| Secretaria | Desativar as contas de pessoas desligadas e atender pedidos dos titulares |
 | Professores | Não incluir dados pessoais de alunos em avisos, tarefas ou anexos além do necessário |
 | Equipe técnica (operadora do sistema) | Manter a rotina automática de descarte e a política de backups funcionando |
-| Direção | Revisar este plano uma vez por ano letivo |
+| Direção | Exportar os dados pedidos pelos titulares, apagar os arquivos de exportação após a entrega e revisar este plano uma vez por ano letivo |
 
 ## 7. Revisão
 

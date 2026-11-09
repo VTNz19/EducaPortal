@@ -37,8 +37,8 @@ funcionalidades que ainda estão em desenvolvimento aparecem marcadas como
 | Credencial | Senha, guardada apenas na forma de hash (ninguém consegue lê-la, nem a escola) | Todos os usuários | Criada pelo próprio usuário no primeiro acesso | Implementado |
 | Registros de auditoria | Ação realizada, data e hora, endereço IP e e-mail informado na tela de login | Todos os usuários | Gerados automaticamente pelo sistema | Implementado |
 | Aceite do termo | Data e versão do Termo de Uso e Aceite aceito | Todos os usuários | Registrado no primeiro acesso e a cada nova versão | Implementado |
-| Vínculo responsável e aluno | Quais alunos cada responsável acompanha | Alunos e responsáveis | Cadastro feito pela secretaria | Previsto |
-| Dados acadêmicos | Turma, disciplinas, notas, faltas, médias e percentual de frequência | Alunos | Lançados pelos professores; médias e frequência são calculadas pelo sistema | Previsto |
+| Vínculo responsável e aluno | Quais alunos cada responsável acompanha | Alunos e responsáveis | Cadastro feito pela secretaria | Implementado |
+| Dados acadêmicos | Turma, disciplinas, notas, faltas, médias e percentual de frequência | Alunos | Lançados pelos professores; médias e frequência são calculadas pelo sistema | Implementado |
 | Conteúdo publicado | Avisos, tarefas e anexos, com o nome do autor | Professores, secretaria e direção | Publicados pelo próprio autor | Avisos: implementado. Tarefas e anexos: previsto |
 | Preferências de notificação | Se o usuário quer receber avisos por e-mail | Todos os usuários | Escolha do próprio usuário | Previsto |
 
@@ -58,9 +58,9 @@ partir das notas e faltas lançadas pelo professor, que pode corrigi-las.
 | Enviar e-mails de primeiro acesso e de recuperação de senha | Nome e e-mail | Execução de contrato (art. 7º, V) |
 | Registrar o aceite do Termo de Uso e Aceite | Data e versão aceita | Execução de contrato (art. 7º, V) |
 | Comunicação escolar: mural de avisos, tarefas e calendário | Conteúdo publicado e nome do autor | Execução de contrato (art. 7º, V) |
-| Lançar notas e faltas, calcular médias e frequência e gerar o boletim (previsto) | Dados acadêmicos | Cumprimento de obrigação legal (art. 7º, II): a Lei de Diretrizes e Bases da Educação (Lei nº 9.394/1996) exige a verificação do rendimento e o controle de frequência (art. 24) |
-| Permitir que o responsável acompanhe o aluno vinculado (previsto) | Vínculo e dados acadêmicos | Cumprimento de obrigação legal (art. 7º, II): a escola deve informar os responsáveis sobre a frequência e o rendimento dos alunos (art. 12, VII, da Lei nº 9.394/1996) |
-| Avisar por e-mail que há conteúdo novo no portal (previsto) | Nome e e-mail | Legítimo interesse (art. 7º, IX), com opção de desligar as notificações |
+| Lançar notas e faltas, calcular médias e frequência e gerar o boletim | Dados acadêmicos | Cumprimento de obrigação legal (art. 7º, II): a Lei de Diretrizes e Bases da Educação (Lei nº 9.394/1996) exige a verificação do rendimento e o controle de frequência (art. 24) |
+| Permitir que o responsável acompanhe o aluno vinculado | Vínculo e dados acadêmicos | Cumprimento de obrigação legal (art. 7º, II): a escola deve informar os responsáveis sobre a frequência e o rendimento dos alunos (art. 12, VII, da Lei nº 9.394/1996) |
+| Avisar por e-mail que há conteúdo novo no portal | Nome e e-mail | Legítimo interesse (art. 7º, IX), com opção de desligar as notificações (previsto) |
 | Segurança e rastreabilidade das ações | Registros de auditoria | Legítimo interesse (art. 7º, IX) e exercício regular de direitos (art. 7º, VI) |
 | Atender os pedidos dos titulares | Dados da conta e registros de auditoria | Cumprimento de obrigação legal (art. 7º, II, e art. 18) |
 
@@ -76,7 +76,7 @@ para obrigações legais da escola.
   IP e o usuário. Senhas e códigos de acesso nunca são registrados.
 - **Expectativa do titular:** o registro é informado nesta política e no
   Termo de Uso e Aceite.
-- **Salvaguardas:** só a secretaria, a direção e a equipe técnica consultam
+- **Salvaguardas:** só a direção e a equipe técnica consultam
   os registros, sem poder alterá-los, e eles são excluídos após 6 meses.
 - **Oposição:** não se aplica enquanto a conta existir, porque os registros
   protegem a segurança de todos os usuários.
@@ -97,16 +97,17 @@ Medidas adotadas:
   algo novo no portal.
 - Não há publicidade, criação de perfil comportamental nem venda de dados.
 - As contas são criadas pela escola, e o responsável acompanha a vida
-  escolar do aluno vinculado (previsto).
+  escolar do aluno vinculado.
 
 ## 5. Quem tem acesso a cada dado
 
 | Perfil | O que pode ver |
 |---|---|
-| Aluno | Os próprios dados; as próprias notas, faltas e boletim (previsto); os avisos; as tarefas da sua turma e o calendário (previsto) |
-| Responsável | Os próprios dados; as notas, faltas e boletim somente dos alunos vinculados a ele (previsto); os avisos e o calendário |
-| Professor | Os próprios dados; as notas e faltas das turmas em que leciona (previsto); os avisos, podendo editar e excluir apenas os que publicou |
-| Secretaria e direção | O cadastro de todos os usuários; os dados acadêmicos de todos os alunos, para emissão de documentos (previsto); os registros de auditoria de cada usuário e a exportação desses dados |
+| Aluno | Os próprios dados; as próprias notas, faltas e boletim; os avisos da escola e da sua turma; as tarefas da sua turma e o calendário (previsto) |
+| Responsável | Os próprios dados; as notas, faltas e boletim somente dos alunos vinculados a ele; os avisos e o calendário (previsto) |
+| Professor | Os próprios dados; as notas e faltas das disciplinas em que leciona e, para acompanhamento, a lista dos seus alunos abaixo do mínimo; os avisos, podendo editar e excluir apenas os que publicou |
+| Secretaria | O cadastro de todos os usuários, com turma e vínculos; os dados acadêmicos de todos os alunos, para emissão de documentos; os indicadores das turmas, sem nomes de alunos |
+| Direção | Tudo o que a secretaria vê e, com exclusividade, os registros de auditoria de cada usuário e a exportação desses dados |
 | Equipe técnica | Acesso administrativo para manutenção do sistema, com os registros de auditoria disponíveis apenas para leitura |
 
 Essas regras são verificadas pelo servidor a cada operação, e não apenas
@@ -142,7 +143,7 @@ Em resumo:
 - **Conta:** desativada no dia do desligamento da escola e anonimizada após
   1 ano letivo.
 - **Notas e faltas:** durante o vínculo do aluno e por 1 ano letivo depois
-  do desligamento (previsto).
+  do desligamento (descarte automático previsto).
 - **Avisos:** 1 ano após a publicação. **Tarefas e anexos:** 1 ano após o
   prazo de entrega (previsto).
 - **Boletins em PDF e exportações de dados:** não ficam armazenados no
@@ -158,7 +159,7 @@ automática diária (previsto).
   de navegação. Por isso, não há aviso de cookies.
 - Para manter você conectado, o sistema guarda no armazenamento local do
   navegador (`localStorage`) um código de renovação da sessão, válido por até
-  7 dias. Ele é apagado quando você clica em **Sair**. Esse armazenamento é
+  8 horas. Ele é apagado quando você clica em **Sair**. Esse armazenamento é
   estritamente necessário para o login funcionar.
 - O código de acesso usado em cada operação fica só na memória da página e
   expira em 30 minutos.
@@ -189,7 +190,7 @@ idade, o responsável legal também pode fazer o pedido.
 
 | Direito | Como é atendido | Situação |
 |---|---|---|
-| Confirmação e acesso aos dados | A secretaria exporta, pelo sistema, um arquivo com os dados da conta e o histórico de atividades | Implementado |
+| Confirmação e acesso aos dados | A direção exporta, pelo sistema, um arquivo com os dados da conta e o histórico de atividades | Implementado |
 | Correção de dados incompletos ou errados | A secretaria corrige o cadastro pelo painel administrativo | Implementado |
 | Portabilidade | O mesmo arquivo exportado, em formato JSON | Implementado |
 | Informação sobre compartilhamento | Descrita na seção 6 desta política | Implementado |
