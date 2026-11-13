@@ -10,7 +10,17 @@ from unittest.mock import patch
 import pytest
 from django.utils import timezone
 
-from apps.academic.models import AnoLetivo, Bimestre, Chamada, Disciplina, Falta, Matricula, Nota, Turma, VinculoResponsavel
+from apps.academic.models import (
+    AnoLetivo,
+    Bimestre,
+    Chamada,
+    Disciplina,
+    Falta,
+    Matricula,
+    Nota,
+    Turma,
+    VinculoResponsavel,
+)
 from apps.audit.models import AuditLog
 
 pytestmark = [pytest.mark.django_db, pytest.mark.integracao]
@@ -105,8 +115,8 @@ def test_secretaria_consulta_mas_nao_lanca_notas(escola, criar_usuario, cliente_
 
 def test_deve_pedir_confirmacao_para_publicar_com_alunos_sem_nota(escola, cliente_autenticado, email):
     client = cliente_autenticado(escola['carla'])
-    client.post(url(escola['mat'], 'notas'), {'bimestre': 4, 'notas': [{'matricula': escola['m_ana'].id, 'valor': '9'}]},
-                format='json')
+    client.post(url(escola['mat'], 'notas'),
+                {'bimestre': 4, 'notas': [{'matricula': escola['m_ana'].id, 'valor': '9'}]}, format='json')
 
     sem_confirmar = client.post(url(escola['mat'], 'publicar-notas'), {'bimestre': 4}, format='json')
 

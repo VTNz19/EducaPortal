@@ -3,14 +3,14 @@
 Nenhum teste acessa o banco: o token é criado só em memória e o relógio é fixado
 com mock, para que a fronteira de 1 hora seja verificada sem depender do tempo real.
 """
-from datetime import datetime, timedelta, timezone as dt_timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
 
 import pytest
 
 from apps.accounts.models import PasswordResetToken, User
 
-AGORA = datetime(2026, 10, 9, 14, 0, tzinfo=dt_timezone.utc)
+AGORA = datetime(2026, 10, 9, 14, 0, tzinfo=UTC)
 
 
 def criar_token(minutos_atras, usado=False):

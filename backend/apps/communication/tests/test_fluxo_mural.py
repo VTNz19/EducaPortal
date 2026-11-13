@@ -16,7 +16,8 @@ pytestmark = [pytest.mark.django_db, pytest.mark.integracao]
 def test_fluxo_completo_de_login_aceite_do_termo_publicacao_e_exclusao_de_aviso(api_client, criar_usuario):
     professor = criar_usuario('professor', email='carla@exemplo.com', aceitou_termos=False)
 
-    login = api_client.post('/api/v1/auth/login/', {'email': 'carla@exemplo.com', 'password': SENHA_PADRAO}, format='json')
+    credenciais = {'email': 'carla@exemplo.com', 'password': SENHA_PADRAO}
+    login = api_client.post('/api/v1/auth/login/', credenciais, format='json')
     assert login.status_code == 200
     assert login.json()['role'] == 'professor'
     api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {login.json()['access']}")
@@ -27,7 +28,8 @@ def test_fluxo_completo_de_login_aceite_do_termo_publicacao_e_exclusao_de_aviso(
     assert aceite.status_code == 200
     assert aceite.json()['precisa_aceitar_termos'] is False
 
-    criado = api_client.post('/api/v1/avisos/', {'titulo': 'Entrega do trabalho', 'conteudo': 'Até sexta.'}, format='json')
+    novo_aviso = {'titulo': 'Entrega do trabalho', 'conteudo': 'Até sexta.'}
+    criado = api_client.post('/api/v1/avisos/', novo_aviso, format='json')
     assert criado.status_code == 201
     aviso_id = criado.json()['id']
 

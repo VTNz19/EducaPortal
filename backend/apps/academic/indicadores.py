@@ -7,6 +7,7 @@ from django.db.models import Avg, Count
 from django.utils import timezone
 
 from apps.accounts.models import User
+
 from .calculos import (
     abaixo_da_frequencia,
     abaixo_da_media,

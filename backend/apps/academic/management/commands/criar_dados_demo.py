@@ -16,10 +16,18 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.utils import timezone
 
-from apps.accounts.models import User
 from apps.academic.models import (
-    AnoLetivo, Bimestre, Chamada, Disciplina, Falta, Matricula, Nota, Turma, VinculoResponsavel,
+    AnoLetivo,
+    Bimestre,
+    Chamada,
+    Disciplina,
+    Falta,
+    Matricula,
+    Nota,
+    Turma,
+    VinculoResponsavel,
 )
+from apps.accounts.models import User
 from apps.communication.models import Aviso
 
 SENHA_DEMO = 'Demo@2026'
@@ -81,7 +89,8 @@ class Command(BaseCommand):
         ultimo = bimestres[-1]
         if ultimo.fim < hoje:
             novo_fim = max(date(hoje.year, 12, 18), hoje)
-            self.stdout.write(f'O 4º bimestre terminava em {ultimo.fim:%d/%m/%Y}; agora termina em {novo_fim:%d/%m/%Y}.')
+            self.stdout.write(f'O 4º bimestre terminava em {ultimo.fim:%d/%m/%Y}; '
+                              f'agora termina em {novo_fim:%d/%m/%Y}.')
             ultimo.fim = novo_fim
             ultimo.save(update_fields=['fim'])
         return ano, bimestres
@@ -119,7 +128,7 @@ class Command(BaseCommand):
             r = self.conta(User.Role.RESPONSAVEL, n, s)
             responsaveis[a] = responsaveis[b] = r
         matriculas = []
-        for turma, nomes in zip(turmas, ALUNOS):
+        for turma, nomes in zip(turmas, ALUNOS, strict=True):
             for completo in nomes:
                 nome, sobrenome = completo.split()
                 if completo not in responsaveis:
@@ -152,7 +161,8 @@ class Command(BaseCommand):
         faltas = []
         for disc in disciplinas:
             alunos_turma = [m for m in matriculas if m.turma_id == disc.turma_id]
-            dia = bimestres[0].inicio + timedelta(days=['Matemática', 'Português', 'História', 'Química'].index(disc.nome))
+            deslocamento = ['Matemática', 'Português', 'História', 'Química'].index(disc.nome)
+            dia = bimestres[0].inicio + timedelta(days=deslocamento)
             while dia < hoje:
                 bimestre = next((b for b in bimestres if b.inicio <= dia <= b.fim), None)
                 if bimestre:

@@ -1,5 +1,13 @@
-"""Configuração usada só pelos testes automatizados."""
-from .settings import *  # noqa: F401,F403
+"""Configuração usada só pelos testes automatizados.
+
+A chave abaixo é fictícia e só existe para os testes rodarem sem o arquivo .env (por exemplo, no CI).
+Ela não é usada em nenhum ambiente real.
+"""
+import os
+
+os.environ.setdefault('DJANGO_SECRET_KEY', 'chave-ficticia-somente-para-testes-automatizados')
+
+from .settings import *  # noqa: E402,F401,F403
 
 DATABASES = {
     'default': {

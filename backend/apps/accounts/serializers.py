@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.academic.models import Matricula, Turma, VinculoResponsavel
+
 from .models import User
 
 

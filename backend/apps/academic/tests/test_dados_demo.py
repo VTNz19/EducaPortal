@@ -5,8 +5,8 @@ import pytest
 from django.core.management import CommandError, call_command
 from django.utils import timezone
 
-from apps.accounts.models import User
 from apps.academic.models import AnoLetivo, Bimestre, Matricula, Nota, Turma, VinculoResponsavel
+from apps.accounts.models import User
 
 pytestmark = [pytest.mark.django_db, pytest.mark.integracao]
 

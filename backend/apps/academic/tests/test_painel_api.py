@@ -6,7 +6,15 @@ import pytest
 from django.utils import timezone
 
 from apps.academic.models import (
-    AnoLetivo, Bimestre, Chamada, Disciplina, Falta, Matricula, Nota, Turma, VinculoResponsavel,
+    AnoLetivo,
+    Bimestre,
+    Chamada,
+    Disciplina,
+    Falta,
+    Matricula,
+    Nota,
+    Turma,
+    VinculoResponsavel,
 )
 
 pytestmark = [pytest.mark.django_db, pytest.mark.integracao]

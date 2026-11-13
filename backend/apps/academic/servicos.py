@@ -1,11 +1,12 @@
 """Serviços do módulo acadêmico que consultam o banco: bimestres, boletim e notificações."""
 from django.conf import settings
 from django.db.models import Sum
-from django.utils.html import escape
 from django.utils import timezone
+from django.utils.html import escape
 
 from apps.accounts.emails import enviar_email_em_lote
 from apps.audit.utils import registrar_log
+
 from .calculos import abaixo_da_frequencia, abaixo_da_media, calcular_frequencia, calcular_media
 from .models import Bimestre, Chamada, Falta, Matricula, Nota, VinculoResponsavel
 

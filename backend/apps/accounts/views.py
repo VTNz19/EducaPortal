@@ -15,6 +15,7 @@ from apps.academic.models import Matricula
 from apps.audit.models import AuditLog
 from apps.audit.serializers import AuditLogSerializer
 from apps.audit.utils import registrar_log
+
 from .emails import enviar_link_definir_senha
 from .models import PasswordResetToken, User
 from .permissions import AceitouTermosVigentes, IsDirecao, IsGestor
