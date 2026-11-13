@@ -9,7 +9,7 @@ from apps.academic.calculos import abaixo_da_frequencia, abaixo_da_media, calcul
 def test_deve_calcular_a_media_aritmetica_dos_quatro_bimestres():
     media, parcial = calcular_media([Decimal('6.0'), Decimal('7.0'), Decimal('8.0'), Decimal('9.0')])
 
-    assert media == Decimal('9.9')
+    assert media == Decimal('7.5')
     assert parcial is False
 
 
