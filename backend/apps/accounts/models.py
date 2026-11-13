@@ -46,9 +46,9 @@ class PasswordResetToken(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
     usado = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"Token de {self.usuario} ({'usado' if self.usado else 'válido' if self.esta_valido() else 'expirado'})"
+
     def esta_valido(self):
         expira_em = self.criado_em + timedelta(hours=1)
         return not self.usado and timezone.now() < expira_em
-
-    def __str__(self):
-        return f"Token de {self.usuario} ({'usado' if self.usado else 'válido' if self.esta_valido() else 'expirado'})"

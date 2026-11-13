@@ -10,6 +10,7 @@ from apps.accounts.models import User
 from apps.accounts.permissions import AceitouTermosVigentes, GestorEditaProfessorConsulta, IsGestor
 from apps.accounts.serializers import UsuarioDetalheSerializer
 from apps.audit.utils import registrar_log
+
 from .models import AnoLetivo, Disciplina, Matricula, Turma, VinculoResponsavel
 from .serializers import (
     AnoLetivoSerializer,

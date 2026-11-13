@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from apps.academic.models import Matricula
 from apps.accounts.permissions import GESTORES, AceitouTermosVigentes, PodeGerenciarAviso
 from apps.audit.utils import registrar_log
+
 from .models import Aviso
 from .notificacoes import notificar_aviso
 from .serializers import AvisoSerializer

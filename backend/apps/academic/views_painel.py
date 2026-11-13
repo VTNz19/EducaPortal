@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 
 from apps.accounts.models import User
 from apps.accounts.permissions import GESTORES, AceitouTermosVigentes, IsProfessor
+
 from .indicadores import alunos_na_situacao, painel_do_aluno, painel_do_gestor, painel_do_professor
 from .models import Disciplina
 from .views_diario import alunos_acessiveis

@@ -43,7 +43,7 @@ class AvisoSerializer(serializers.ModelSerializer):
 
         turma = attrs.get('turma')
         request = self.context.get('request')
-        if turma and request and request.user.role == 'professor':
-            if not turma.disciplinas.filter(professor=request.user).exists():
-                raise serializers.ValidationError({'turma': 'Você só pode publicar avisos para turmas em que leciona.'})
+        if (turma and request and request.user.role == 'professor'
+                and not turma.disciplinas.filter(professor=request.user).exists()):
+            raise serializers.ValidationError({'turma': 'Você só pode publicar avisos para turmas em que leciona.'})
         return attrs

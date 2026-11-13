@@ -69,7 +69,8 @@ def gerar_boletim_pdf(boletim):
     gerado = timezone.localtime().strftime('%d/%m/%Y às %H:%M')
     conteudo = [
         Paragraph('EducaPortal – Boletim escolar', titulo),
-        Paragraph(f'<b>Aluno:</b> {escape(boletim["aluno"]["nome"])} &nbsp;&nbsp; <b>Turma:</b> {escape(boletim["turma"])} '
+        Paragraph(f'<b>Aluno:</b> {escape(boletim["aluno"]["nome"])} &nbsp;&nbsp; '
+                  f'<b>Turma:</b> {escape(boletim["turma"])} '
                   f'&nbsp;&nbsp; <b>Ano letivo:</b> {boletim["ano"]}', texto),
         Spacer(1, 0.4 * cm),
         tabela,
