@@ -21,3 +21,4 @@ def erros_dos_bimestres(bimestres):
                 f'O {atual["numero"]}º bimestre deve começar depois do fim do {anterior["numero"]}º bimestre.'
             )
     return erros
+import os

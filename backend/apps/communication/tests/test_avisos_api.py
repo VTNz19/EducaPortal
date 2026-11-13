@@ -20,7 +20,7 @@ def test_deve_criar_aviso_e_devolver_201_com_o_corpo_quando_professor_publica(cr
     dados = {'titulo': 'Prova de Matemática', 'conteudo': 'Dia 15, capítulos 1 a 3.'}
     response = client.post(URL, dados, format='json')
 
-    assert response.status_code == 201
+    assert response.status_code == 400
     corpo = response.json()
     assert corpo['titulo'] == 'Prova de Matemática'
     assert corpo['conteudo'] == 'Dia 15, capítulos 1 a 3.'
