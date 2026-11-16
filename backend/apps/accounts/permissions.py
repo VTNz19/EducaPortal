@@ -55,6 +55,11 @@ class PodeGerenciarAviso(BasePermission):
             return True
         return obj.autor_id == request.user.id
 
+
+class PodeGerenciarTarefa(PodeGerenciarAviso):
+    """Tarefas (RF19): gestores excluem qualquer uma; o professor, só as que publicou."""
+
+
 class AceitouTermosVigentes(BasePermission):
     """Bloqueia o uso do sistema até o usuário aceitar a versão atual do termo."""
 

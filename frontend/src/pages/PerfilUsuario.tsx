@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { isAxiosError } from 'axios'
-import { buscarUsuario, exportarDadosUsuario, listarLogsUsuario, listarPorPerfil, NOMES_PAPEIS } from '../api/usuarios'
+import {
+    anonimizarUsuario, buscarUsuario, CONFIRMACAO_ANONIMIZAR, exportarDadosUsuario, listarLogsUsuario, listarPorPerfil,
+    NOMES_PAPEIS,
+} from '../api/usuarios'
 import type { RegistroLog, UsuarioDetalhe, UsuarioResumo } from '../api/usuarios'
 import {
     desvincularResponsavel, listarTurmas, rematricularAluno, transferirAluno, vincularResponsavel,
@@ -48,6 +51,12 @@ const NOMES_ACOES: Record<string, string> = {
     aviso_notificado: 'Aviso enviado por e-mail',
     aviso_falha_envio: 'Falha ao enviar aviso do mural por e-mail',
     boletim_emitido: 'Emitiu boletim em PDF',
+    conta_anonimizada: 'Anonimizou uma conta a pedido do titular',
+    tarefa_criada: 'Publicou tarefa',
+    tarefa_excluida: 'Excluiu tarefa',
+    evento_criado: 'Cadastrou evento no calendário',
+    evento_editado: 'Alterou evento do calendário',
+    evento_excluido: 'Excluiu evento do calendário',
 }
 
 const NOMES_SITUACAO: Record<string, string> = {
@@ -73,7 +82,11 @@ function baixarJson(dados: unknown, nomeArquivo: string) {
 export function PerfilUsuario() {
     const { id } = useParams()
     const usuarioId = Number(id)
-    const ehDirecao = useAuth().usuario?.role === 'direcao'
+    const { usuario: logado } = useAuth()
+    const ehDirecao = logado?.role === 'direcao'
+    const [confirmacao, setConfirmacao] = useState('')
+    const [anonimizando, setAnonimizando] = useState(false)
+    const [erroAnonimizar, setErroAnonimizar] = useState('')
     const [perfil, setPerfil] = useState<UsuarioDetalhe | null>(null)
     const [logs, setLogs] = useState<RegistroLog[]>([])
     const [carregando, setCarregando] = useState(true)
@@ -154,6 +167,22 @@ export function PerfilUsuario() {
                 return
             }
             setErro(mensagemDeErro(error, 'Não foi possível remover o vínculo.'))
+        }
+    }
+
+    async function handleAnonimizar() {
+        if (!perfil) return
+        setErroAnonimizar('')
+        setMensagem('')
+        setAnonimizando(true)
+        try {
+            setPerfil(await anonimizarUsuario(usuarioId, confirmacao))
+            setConfirmacao('')
+            setMensagem('Conta anonimizada. O pedido do titular foi registrado no log de auditoria.')
+        } catch (error) {
+            setErroAnonimizar(mensagemDeErro(error, 'Não foi possível anonimizar a conta.'))
+        } finally {
+            setAnonimizando(false)
         }
     }
 
@@ -245,7 +274,7 @@ export function PerfilUsuario() {
                                     </table>
                                 </div>
 
-                                <div className="painel-form painel-subform">
+                                {!perfil.anonimizado_em && <div className="painel-form painel-subform">
                                     <div className="painel-campo">
                                         <label htmlFor="turma-destino">Nova turma</label>
                                         <select id="turma-destino" value={turmaDestino} onChange={(e) => setTurmaDestino(e.target.value)}>
@@ -265,7 +294,7 @@ export function PerfilUsuario() {
                                     <button type="button" className="painel-botao" disabled={!destino} onClick={handleMudarTurma}>
                                         {destino && destino.ano !== anoAtivo ? 'Rematricular' : 'Transferir'}
                                     </button>
-                                </div>
+                                </div>}
                             </section>
                         )}
 
@@ -289,7 +318,7 @@ export function PerfilUsuario() {
                                     </ul>
                                 )}
 
-                                {perfil.role === 'aluno' ? (
+                                {perfil.anonimizado_em ? null : perfil.role === 'aluno' ? (
                                     <div className="painel-form painel-subform">
                                         <div className="painel-campo">
                                             <label htmlFor="responsavel-novo">Vincular responsável já cadastrado</label>
@@ -311,6 +340,42 @@ export function PerfilUsuario() {
                                         Para vincular este responsável a outro aluno, abra o perfil do aluno.
                                     </p>
                                 )}
+                            </section>
+                        )}
+
+                        {perfil.anonimizado_em ? (
+                            <section className="painel-card">
+                                <h2>Conta anonimizada</h2>
+                                <p className="painel-ajuda">
+                                    Anonimizada em {new Date(perfil.anonimizado_em).toLocaleString('pt-BR')}. Os dados que
+                                    identificavam a pessoa foram removidos e a conta não pode mais ser usada.
+                                </p>
+                            </section>
+                        ) : perfil.id !== logado?.id && (
+                            <section className="painel-card">
+                                <h2>Anonimização a pedido do titular</h2>
+                                <p className="painel-ajuda">
+                                    Use somente para atender um pedido de exclusão feito pelo titular ou pelo responsável
+                                    legal, depois de confirmar a identidade de quem pediu (Plano de Retenção, seção 5).
+                                    O nome passa a ser "Usuário removido", o e-mail é substituído, a senha deixa de
+                                    funcionar e o e-mail é apagado dos registros de atividades.
+                                    {perfil.role === 'aluno' && ' A matrícula ativa é encerrada e os vínculos com responsáveis são removidos; as notas e as faltas continuam no histórico, sem identificar o aluno.'}
+                                    {' '}<strong>Esta ação não pode ser desfeita.</strong>
+                                </p>
+                                <div className="painel-form">
+                                    <div className="painel-campo">
+                                        <label htmlFor="confirmar-anonimizacao">Digite {CONFIRMACAO_ANONIMIZAR} para confirmar</label>
+                                        <input id="confirmar-anonimizacao" type="text" autoComplete="off" value={confirmacao}
+                                            onChange={(e) => setConfirmacao(e.target.value)} />
+                                    </div>
+                                </div>
+                                {erroAnonimizar && <p className="painel-erro" role="alert">{erroAnonimizar}</p>}
+                                <div className="painel-acoes">
+                                    <button type="button" className="painel-botao-perigo" onClick={handleAnonimizar}
+                                        disabled={anonimizando || confirmacao !== CONFIRMACAO_ANONIMIZAR}>
+                                        {anonimizando ? 'Anonimizando...' : 'Anonimizar conta'}
+                                    </button>
+                                </div>
                             </section>
                         )}
 

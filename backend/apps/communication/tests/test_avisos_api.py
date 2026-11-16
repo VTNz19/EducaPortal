@@ -17,7 +17,8 @@ def test_deve_criar_aviso_e_devolver_201_com_o_corpo_quando_professor_publica(cr
     professor = criar_usuario('professor', first_name='Carla', last_name='Mendes')
     client = cliente_autenticado(professor)
 
-    response = client.post(URL, {'titulo': 'Prova de Matemática', 'conteudo': 'Dia 15, capítulos 1 a 3.'}, format='json')
+    dados = {'titulo': 'Prova de Matemática', 'conteudo': 'Dia 15, capítulos 1 a 3.'}
+    response = client.post(URL, dados, format='json')
 
     assert response.status_code == 201
     corpo = response.json()

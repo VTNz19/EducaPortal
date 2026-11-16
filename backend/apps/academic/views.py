@@ -3,6 +3,7 @@ from django.db.models import Count, ProtectedError, Q
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -10,6 +11,7 @@ from apps.accounts.models import User
 from apps.accounts.permissions import AceitouTermosVigentes, GestorEditaProfessorConsulta, IsGestor
 from apps.accounts.serializers import UsuarioDetalheSerializer
 from apps.audit.utils import registrar_log
+
 from .models import AnoLetivo, Disciplina, Matricula, Turma, VinculoResponsavel
 from .serializers import (
     AnoLetivoSerializer,
@@ -100,6 +102,12 @@ class AlunoMatriculaViewSet(viewsets.GenericViewSet):
 
     permission_classes = [IsAuthenticated, AceitouTermosVigentes, IsGestor]
     queryset = User.objects.filter(role=User.Role.ALUNO)
+
+    def get_object(self):
+        aluno = super().get_object()
+        if aluno.anonimizado_em:
+            raise ValidationError({'detail': ['Esta conta foi anonimizada e não pode mais ser alterada.']})
+        return aluno
 
     def responder(self, aluno):
         return Response(UsuarioDetalheSerializer(aluno).data)

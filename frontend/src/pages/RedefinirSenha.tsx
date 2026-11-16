@@ -3,6 +3,9 @@ import type { FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { redefinirSenha } from '../api/senha'
 import './Login.css'
+import { CampoSenha } from '../components/CampoSenha'
+
+const TAMANHO_MINIMO_SENHA = 8
 
 export function RedefinirSenha() {
     const [searchParams] = useSearchParams()
@@ -23,8 +26,8 @@ export function RedefinirSenha() {
             setErro('Link inválido: token não encontrado na URL.')
             return
         }
-        if (novaSenha.length < 6) {
-            setErro('A senha deve ter ao menos 6 caracteres.')
+        if (novaSenha.length < TAMANHO_MINIMO_SENHA) {
+            setErro(`A senha deve ter no mínimo ${TAMANHO_MINIMO_SENHA} caracteres.`)
             return
         }
         if (novaSenha !== confirmarSenha) {
@@ -66,22 +69,27 @@ export function RedefinirSenha() {
 
                             <div className="login-field">
                                 <label htmlFor="nova-senha">Nova senha</label>
-                                <input
+                                <CampoSenha
                                     id="nova-senha"
-                                    type="password"
                                     value={novaSenha}
                                     onChange={(e) => setNovaSenha(e.target.value)}
+                                    minLength={TAMANHO_MINIMO_SENHA}
+                                    autoComplete="new-password"
+                                    aria-describedby="regra-senha"
                                     required
                                 />
+                                <p id="regra-senha" className={`login-field-regra${novaSenha && novaSenha.length < TAMANHO_MINIMO_SENHA ? ' login-field-regra-falta' : ''}`}>
+                                    Mínimo de {TAMANHO_MINIMO_SENHA} caracteres{novaSenha ? ` (${novaSenha.length} digitado${novaSenha.length === 1 ? '' : 's'})` : ''}.
+                                </p>
                             </div>
 
                             <div className="login-field">
                                 <label htmlFor="confirmar-senha">Confirmar nova senha</label>
-                                <input
+                                <CampoSenha
                                     id="confirmar-senha"
-                                    type="password"
                                     value={confirmarSenha}
                                     onChange={(e) => setConfirmarSenha(e.target.value)}
+                                    autoComplete="new-password"
                                     required
                                 />
                             </div>

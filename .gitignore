@@ -15,3 +15,7 @@ frontend/dist/
 
 # Documentos pessoais 
 *.docx
+
+# Anexos enviados pelos professores
+backend/media/
+backend/staticfiles/

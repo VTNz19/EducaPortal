@@ -1,6 +1,6 @@
 # Termo de Uso e Aceite — EducaPortal
 
-**Versão:** 2.1 — 8 de novembro de 2026
+**Versão:** 2.2 — 16 de novembro de 2026
 
 Este termo define as regras de uso do EducaPortal. No seu primeiro acesso,
 e sempre que este termo mudar de versão, o sistema pede que você o leia e o
@@ -25,7 +25,7 @@ Final de Curso de Engenharia de Software da Universidade de Mogi das Cruzes.
   consulta dos registros de atividades pela direção (implementado).
 - Lançamento de notas e faltas, cálculo de médias e frequência, boletim em
   PDF, painel de indicadores e notificações por e-mail (implementado).
-- Tarefas com prazo de entrega e anexos e calendário escolar (previsto).
+- Tarefas com prazo de entrega e anexos e calendário escolar (implementado).
 
 **Limitações:** o EducaPortal não substitui os documentos oficiais da
 escola, como o histórico escolar. Se houver diferença entre o que aparece
@@ -60,9 +60,9 @@ no sistema e o registro oficial da secretaria, vale o registro oficial.
 |---|---|
 | Secretaria | Criar contas de alunos, responsáveis e professores; montar turmas e disciplinas e matricular alunos; publicar e gerenciar qualquer aviso; consultar o boletim de todos os alunos e corrigir chamadas |
 | Direção | As mesmas permissões da secretaria e, com exclusividade, consultar e exportar os registros de atividades de cada usuário |
-| Professor | Publicar avisos e gerenciar apenas os que publicou; lançar notas e faltas das suas disciplinas; publicar tarefas (previsto) |
-| Aluno | Ler avisos; consultar as próprias notas, faltas e boletim; consultar as tarefas da sua turma e o calendário (previsto) |
-| Responsável | Ler avisos; consultar as notas, faltas e boletim dos alunos vinculados a ele |
+| Professor | Publicar avisos e gerenciar apenas os que publicou; lançar notas e faltas das suas disciplinas; publicar tarefas com anexos nas suas disciplinas |
+| Aluno | Ler avisos; consultar as próprias notas, faltas e boletim; consultar as tarefas da sua turma e o calendário |
+| Responsável | Ler avisos; consultar as notas, faltas, boletim, tarefas e calendário dos alunos vinculados a ele |
 
 As permissões são verificadas pelo servidor em toda operação. Tentar burlar
 essas permissões é proibido (seção 5).
@@ -166,3 +166,4 @@ I, do Código de Defesa do Consumidor).
 | 1.0 | 22/09/2026 | Primeira versão (Termo de Uso) |
 | 2.0 | 25/09/2026 | Passa a ser Termo de Uso e Aceite; novos perfis, conteúdo e propriedade intelectual, disponibilidade, legislação e foro |
 | 2.1 | 08/11/2026 | Consulta e exportação dos registros de atividades exclusivas da Direção; turmas, matrículas, notas, faltas, boletim, painel, avisos por turma e notificações por e-mail passam a funcionar |
+| 2.2 | 16/11/2026 | Tarefas com prazo de entrega e anexos e calendário escolar passam a funcionar; o responsável passa a consultar as tarefas e o calendário dos alunos vinculados |

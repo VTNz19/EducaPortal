@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.academic.models import Matricula, Turma, VinculoResponsavel
+
 from .models import User
 
 
@@ -42,9 +43,20 @@ class EsqueciSenhaSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
 
+TAMANHO_MINIMO_SENHA = 8
+
+
 class RedefinirSenhaSerializer(serializers.Serializer):
+    """RN19: a nova senha tem no mínimo 8 caracteres. Senhas antigas mais curtas continuam entrando."""
+
     token = serializers.CharField()
-    nova_senha = serializers.CharField(min_length=6)
+    nova_senha = serializers.CharField(
+        min_length=TAMANHO_MINIMO_SENHA,
+        trim_whitespace=False,
+        error_messages={'min_length': f'A senha deve ter no mínimo {TAMANHO_MINIMO_SENHA} caracteres.',
+                        'blank': 'Informe a nova senha.'},
+    )
+
 
 PAPEIS_CRIAVEIS_PELA_SECRETARIA = [
     (User.Role.ALUNO, 'Aluno'),
@@ -131,7 +143,7 @@ class UsuarioDetalheSerializer(UsuarioListaSerializer):
 
     class Meta(UsuarioListaSerializer.Meta):
         fields = ['id', 'nome', 'first_name', 'last_name', 'email', 'role', 'is_active', 'date_joined',
-                  'matriculas', 'vinculos']
+                  'anonimizado_em', 'matriculas', 'vinculos']
 
     def get_matriculas(self, obj):
         """Histórico de matrículas do aluno, da mais recente para a mais antiga (RN56)."""

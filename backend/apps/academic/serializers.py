@@ -2,6 +2,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from apps.accounts.models import User
+
 from .models import AnoLetivo, Bimestre, Disciplina, Turma
 from .regras import erros_dos_bimestres
 
@@ -142,8 +143,9 @@ class NotaItemSerializer(serializers.Serializer):
     matricula = serializers.IntegerField()
     valor = serializers.DecimalField(
         max_digits=3, decimal_places=1, min_value=0, max_value=10, allow_null=True,
-        error_messages={k: MSG_NOTA for k in ('invalid', 'min_value', 'max_value', 'max_digits',
-                                              'max_decimal_places', 'max_whole_digits')},
+        error_messages=dict.fromkeys(
+            ('invalid', 'min_value', 'max_value', 'max_digits', 'max_decimal_places', 'max_whole_digits'), MSG_NOTA,
+        ),
     )
 
 

@@ -1,7 +1,6 @@
 """Diário de classe: lançamento e publicação de notas (RF15), chamada (RF16) e boletim (RF17/RF18)."""
 from django.db import transaction
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -13,8 +12,9 @@ from rest_framework.views import APIView
 from apps.accounts.models import User
 from apps.accounts.permissions import GESTORES, AceitouTermosVigentes, PodeUsarDiario
 from apps.audit.utils import registrar_log
-from .pdf import gerar_boletim_pdf
+
 from .models import Bimestre, Chamada, Disciplina, Falta, Matricula, Nota, VinculoResponsavel
+from .pdf import gerar_boletim_pdf
 from .serializers import LancarNotasSerializer, PublicarNotasSerializer, RegistrarChamadaSerializer
 from .servicos import (
     bimestre_da_data,
@@ -119,8 +119,10 @@ class DiarioViewSet(viewsets.GenericViewSet):
         for item in dados.validated_data['notas']:
             if item['matricula'] not in validas:
                 erros.append('Um dos alunos não está matriculado nesta turma.')
-            elif item['valor'] is None and existentes.get(item['matricula']) and existentes[item['matricula']].publicada:
-                erros.append(f'A nota de {nome(validas[item["matricula"]].aluno)} já foi publicada; corrija o valor em vez de apagá-lo.')
+            elif (item['valor'] is None and existentes.get(item['matricula'])
+                    and existentes[item['matricula']].publicada):
+                aluno = nome(validas[item['matricula']].aluno)
+                erros.append(f'A nota de {aluno} já foi publicada; corrija o valor em vez de apagá-lo.')
         if erros:
             raise ValidationError({'notas': sorted(set(erros))})
 
@@ -133,7 +135,8 @@ class DiarioViewSet(viewsets.GenericViewSet):
                     if nota:
                         nota.delete()
                 elif nota is None:
-                    Nota.objects.create(matricula_id=item['matricula'], disciplina=disciplina, bimestre=bimestre, valor=valor)
+                    Nota.objects.create(matricula_id=item['matricula'], disciplina=disciplina,
+                                        bimestre=bimestre, valor=valor)
                 elif nota.valor != valor:
                     if nota.publicada:
                         alteradas.append((nota, nota.valor, valor))
@@ -168,12 +171,14 @@ class DiarioViewSet(viewsets.GenericViewSet):
                 'requer_confirmacao': True,
             }, status=status.HTTP_409_CONFLICT)
 
-        a_publicar = Nota.objects.filter(disciplina=disciplina, bimestre=bimestre, publicada=False).select_related('matricula__aluno')
+        a_publicar = (Nota.objects.filter(disciplina=disciplina, bimestre=bimestre, publicada=False)
+                      .select_related('matricula__aluno'))
         alunos = [n.matricula.aluno for n in a_publicar]
         if not alunos:
             raise ValidationError({'detail': 'Não há notas novas para publicar neste bimestre.'})
         a_publicar.update(publicada=True, publicada_em=timezone.now())
-        self.log('notas_publicadas', f'disciplina id={disciplina.id}, {bimestre.numero}º bimestre, {len(alunos)} nota(s)')
+        self.log('notas_publicadas',
+                 f'disciplina id={disciplina.id}, {bimestre.numero}º bimestre, {len(alunos)} nota(s)')
 
         resposta = self.estado_notas(disciplina, bimestre)
         resposta['email_enviado'] = notificar(
@@ -217,8 +222,8 @@ class DiarioViewSet(viewsets.GenericViewSet):
             texto = request.query_params.get('data')
             try:
                 data = timezone.datetime.strptime(texto, '%Y-%m-%d').date() if texto else timezone.localdate()
-            except ValueError:
-                raise ValidationError({'data': ['Data inválida.']})
+            except ValueError as erro:
+                raise ValidationError({'data': ['Data inválida.']}) from erro
             return Response(self.estado_chamada(disciplina, data, self.validar_data(disciplina, data)))
 
         dados = RegistrarChamadaSerializer(data=request.data)
@@ -250,7 +255,8 @@ class DiarioViewSet(viewsets.GenericViewSet):
 
         resposta = self.estado_chamada(disciplina, data, bimestre)
         novos = [validas[m].aluno for m in ausentes - anteriores]
-        destinatarios = list(VinculoResponsavel.objects.filter(aluno__in=novos).values_list('responsavel__email', flat=True))
+        destinatarios = list(VinculoResponsavel.objects.filter(aluno__in=novos)
+                             .values_list('responsavel__email', flat=True))
         resposta['email_enviado'] = notificar(
             destinatarios, 'Registro de frequência no EducaPortal',
             'Há um registro novo de frequência do aluno pelo qual você é responsável.',

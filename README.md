@@ -98,8 +98,21 @@ banco para toda a rede e robôs da internet tentam entrar com senhas comuns, com
 `postgres`. Isso já aconteceu com este projeto em novembro de 2026.
 
 Para popular o banco com dados fictícios de demonstração (contas `@exemplo.com`,
-turmas, notas, chamadas e avisos), rode depois das migrações:
-`python manage.py criar_dados_demo`.
+turmas, notas, chamadas, avisos, tarefas e eventos), rode depois das migrações:
+`python manage.py criar_dados_demo`. Se a demonstração já foi criada antes das
+tarefas e do calendário, acrescente só essa parte com
+`python manage.py criar_dados_demo --agenda`.
+
+Duas rotinas devem rodar uma vez por dia no servidor (pelo `cron` no Linux ou
+pelo Agendador de Tarefas no Windows):
+
+- `python manage.py enviar_avisos_agendados`: envia o e-mail dos avisos cuja
+  exibição começou;
+- `python manage.py aplicar_retencao`: exclui ou anonimiza os dados com prazo
+  vencido, conforme o Plano de Retenção (RF22).
+
+Os anexos das tarefas ficam em `backend/media/` (fora do Git). Para guardá-los
+em outra pasta, defina `DJANGO_MEDIA_ROOT` no `.env`.
 
 ### 2. Back-end
 
@@ -152,6 +165,12 @@ A aplicação fica em `http://localhost:5173`.
 
 Outros comandos úteis: `npm run build` (compila para produção) e
 `npm run lint`.
+
+## Publicação em nuvem
+
+O passo a passo para publicar a API e o banco no Railway e o front-end na
+Vercel, com todas as variáveis de ambiente, está em
+[docs/implantacao.md](docs/implantacao.md).
 
 ## Uso básico
 

@@ -16,6 +16,8 @@ import { RedefinirSenha } from './pages/RedefinirSenha'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 import { PlanoDeRetencao } from './pages/PlanoDeRetencao'
 import { AceiteTermos } from './pages/AceiteTermos'
+import { Tarefas } from './pages/Tarefas'
+import { Calendario } from './pages/Calendario'
 
 const Painel = lazy(() => import('./pages/Painel').then((m) => ({ default: m.Painel })))
 
@@ -87,6 +89,22 @@ function App() {
         element={
           <ProtectedRoute papeis={['professor']}>
             <Chamada />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tarefas"
+        element={
+          <ProtectedRoute>
+            <Tarefas />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/calendario"
+        element={
+          <ProtectedRoute>
+            <Calendario />
           </ProtectedRoute>
         }
       />

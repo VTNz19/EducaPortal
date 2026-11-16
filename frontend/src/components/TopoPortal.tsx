@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import type { Papel } from '../context/AuthContext'
+import { NOMES_PAPEIS } from '../api/usuarios'
+import './TopoPortal.css'
 
 const LINKS: { para: string; texto: string; papeis: Papel[] }[] = [
     { para: '/painel', texto: 'Painel', papeis: ['secretaria', 'direcao', 'professor', 'aluno', 'responsavel'] },
@@ -8,6 +10,8 @@ const LINKS: { para: string; texto: string; papeis: Papel[] }[] = [
     { para: '/professor/notas', texto: 'Lançar notas', papeis: ['professor'] },
     { para: '/professor/chamada', texto: 'Chamada', papeis: ['professor'] },
     { para: '/boletim', texto: 'Boletim', papeis: ['aluno', 'responsavel'] },
+    { para: '/tarefas', texto: 'Tarefas', papeis: ['professor', 'aluno', 'responsavel'] },
+    { para: '/calendario', texto: 'Calendário', papeis: ['secretaria', 'direcao', 'professor', 'aluno', 'responsavel'] },
     { para: '/secretaria', texto: 'Contas', papeis: ['secretaria', 'direcao'] },
     { para: '/secretaria/estrutura', texto: 'Estrutura acadêmica', papeis: ['secretaria', 'direcao'] },
 ]
@@ -22,7 +26,12 @@ export function TopoPortal() {
                 {links.map((l) => (
                     <NavLink key={l.para} to={l.para} end className="mural-topbar-link">{l.texto}</NavLink>
                 ))}
-                {usuario && <span>{usuario.nome}</span>}
+                {usuario && (
+                    <span className="topo-perfil" title="Usuário conectado">
+                        <span className="topo-perfil-nome">{usuario.nome}</span>
+                        <span className="topo-perfil-papel">Perfil: {NOMES_PAPEIS[usuario.role] ?? usuario.role}</span>
+                    </span>
+                )}
                 <button type="button" onClick={logout}>Sair</button>
             </nav>
         </header>

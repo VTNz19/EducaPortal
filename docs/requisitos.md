@@ -1,6 +1,6 @@
 # Requisitos Funcionais e Não Funcionais — EducaPortal
 
-**Versão:** 3.1 — 8 de novembro de 2026
+**Versão:** 3.4 — 16 de novembro de 2026
 
 ## 1. Convenções
 
@@ -68,10 +68,10 @@ O campo **Situação** indica:
 | RF16 | Registrar faltas | Professor | Implementado | — |
 | RF17 | Calcular médias e frequência | Sistema | Implementado | — |
 | RF18 | Emitir boletim em PDF | Aluno, Responsável, Gestor | Implementado | — |
-| RF19 | Publicar tarefa com anexos | Professor | Previsto | 30/11/2026 |
-| RF20 | Gerenciar o calendário escolar | Gestor | Previsto | 30/11/2026 |
-| RF21 | Exibir painel de indicadores | Todos os perfis | Parcial | 30/11/2026 |
-| RF22 | Aplicar a retenção e o descarte de dados | Sistema | Previsto | 30/11/2026 |
+| RF19 | Publicar tarefa com anexos | Professor | Implementado | — |
+| RF20 | Gerenciar o calendário escolar | Gestor | Implementado | — |
+| RF21 | Exibir painel de indicadores | Todos os perfis | Implementado | — |
+| RF22 | Aplicar a retenção e o descarte de dados | Sistema | Implementado | — |
 
 As notificações por e-mail deixaram de ser um requisito separado. Cada
 requisito que gera uma notificação (RF08, RF15, RF16 e RF19) descreve o envio
@@ -84,12 +84,13 @@ no próprio fluxo.
 | 1 – Núcleo acadêmico | 26/10/2026 | RF13 e RF14; cadastro de aluno com turma e responsável (RF03); filtros na lista de contas (RF06); sessão máxima de 8 horas (RF01) | Concluída |
 | 2 – Notas e frequência | 09/11/2026 | RF15, RF16 e RF17 | Concluída |
 | 3 – Boletim e comunicação | 16/11/2026 | RF18; avisos por turma, período de exibição e notificação por e-mail (RF08 a RF10); tela de edição de aviso (RF09) | Concluída antes do prazo |
-| 4 – Complementos e implantação | 30/11/2026 | RF19, RF20, RF21 e RF22; implantação na Vercel e no Railway (RNF04) | Em andamento: RF21 parcial |
+| 4 – Complementos e implantação | 30/11/2026 | RF19, RF20, RF21 e RF22; implantação na Vercel e no Railway (RNF04) | Requisitos funcionais concluídos em 15/11/2026; implantação em andamento |
 
 As etapas 1 a 3 entregam as funcionalidades principais do sistema: cadastro
 acadêmico, notas, faltas, médias, boletim e comunicação automática com alunos
-e responsáveis. Em 8 de novembro de 2026, 18 dos 22 requisitos funcionais estão
-implementados e o RF21 está parcial.
+e responsáveis. A etapa 4 completa o sistema com tarefas, calendário e descarte
+automático de dados. Em 15 de novembro de 2026, os 22 requisitos funcionais
+estão implementados; resta a implantação em nuvem (RNF04).
 
 ## 2. Requisitos funcionais
 
@@ -407,8 +408,9 @@ log.
   valer.
 - RN18 – A resposta ao pedido é sempre a mesma, para não revelar quais e-mails
   estão cadastrados.
-- RN19 – A senha deve ter no mínimo 6 caracteres e ser digitada duas vezes de
-  forma idêntica.
+- RN19 – A nova senha deve ter no mínimo 8 caracteres e ser digitada duas
+  vezes de forma idêntica. Senhas definidas antes dessa regra continuam
+  valendo para o login.
 - RN20 – O código do link nunca é gravado no log de auditoria.
 
 **Critérios de aceite:**
@@ -852,9 +854,10 @@ a) Quando a ação não está ligada a uma conta (por exemplo, login com e-mail
   `termos_aceitos`, `usuario_criado`, `convite_falha_envio`,
   `esqueci_senha_solicitado`, `esqueci_senha_falha_envio`,
   `redefinir_senha_falha`, `senha_redefinida`, `aviso_criado`,
-  `aviso_editado`, `aviso_excluido` e `dados_exportados`. Com os requisitos
-  previstos, passam a ser registradas também as ações de matrícula, vínculo,
-  notas, faltas, tarefas e notificações descritas em cada requisito.
+  `aviso_editado`, `aviso_excluido`, `dados_exportados`, `tarefa_criada`,
+  `tarefa_excluida`, `evento_criado`, `evento_editado`, `evento_excluido`,
+  `retencao_executada`, `retencao_falha` e `conta_anonimizada`, além das ações de matrícula,
+  vínculo, notas, faltas e notificações descritas em cada requisito.
 - RN44 – Os registros não podem ser alterados nem excluídos por nenhum perfil,
   inclusive no painel administrativo.
 - RN45 – Senhas e códigos de redefinição de senha nunca são gravados no log.
@@ -870,7 +873,7 @@ a) Quando a ação não está ligada a uma conta (por exemplo, login com e-mail
 - CA02 – Dado um superusuário no painel administrativo, quando abrir um
   registro de log, então não deverão existir as opções de alterar ou excluir.
 
-**Situação:** Implementado. A exclusão após 6 meses está prevista no RF22.
+**Situação:** Implementado. A exclusão após 6 meses é feita pela rotina do RF22.
 
 ---
 
@@ -1468,7 +1471,10 @@ registrada.
 - CA02 – Dada uma tarefa da turma 3º A, quando um aluno do 3º B acessar as
   tarefas, então ela não deverá aparecer.
 
-**Situação:** Previsto.
+**Situação:** Implementado. Além da extensão, o sistema confere se o conteúdo
+do arquivo corresponde ao tipo informado. Os anexos não têm link público: o
+download passa pela API, que verifica se o usuário pode ver a tarefa. O
+professor pode excluir as próprias tarefas, junto com os anexos.
 
 ---
 
@@ -1520,7 +1526,7 @@ a) O sistema informa "A data de término não pode ser anterior à data de
 - CA02 – Dado um evento do 3º A, quando um aluno do 3º B acessar o calendário,
   então o evento não deverá aparecer.
 
-**Situação:** Previsto.
+**Situação:** Implementado. O gestor também edita e exclui eventos.
 
 ---
 
@@ -1606,8 +1612,7 @@ a) O sistema exibe "Ainda não há notas ou chamadas registradas neste
 - CA03 – Dado um gestor, quando acessar o painel, então deverá ver os
   indicadores de todas as turmas do ano letivo atual.
 
-**Situação:** Parcial. As tarefas e os eventos do fluxo do aluno entram com o
-RF19 e o RF20; os demais indicadores estão implementados.
+**Situação:** Implementado.
 
 ---
 
@@ -1619,7 +1624,8 @@ Dados.
 
 **Ator primário:** Sistema.
 
-**Atores secundários:** Não se aplica.
+**Atores secundários:** Gestor (Secretaria ou Direção), na anonimização a
+pedido do titular.
 
 **Pré-condições:** Rotina agendada no servidor.
 
@@ -1636,21 +1642,53 @@ a) O sistema desfaz as alterações daquela execução.
 b) O sistema registra `retencao_falha` no log, com a causa, e tenta novamente
    na execução seguinte.
 
+**Fluxo alternativo (1): Anonimização a pedido do titular**
+
+a) O titular, ou o responsável legal, pede a exclusão dos seus dados pelo
+   canal de privacidade, e a secretaria confirma a identidade de quem pediu.
+b) O gestor abre o perfil do usuário e digita ANONIMIZAR para confirmar.
+c) O sistema verifica os impedimentos (RN86) e anonimiza a conta na hora. No
+   aluno, encerra a matrícula ativa e remove os vínculos com responsáveis; as
+   notas e as faltas continuam no histórico, sem identificar o aluno (RN56).
+d) O sistema registra `conta_anonimizada` no log, sem dados pessoais.
+
+**Fluxo de exceção (Anonimização a pedido do titular, c): Impedimento**
+
+a) O sistema informa o motivo, por exemplo "Vincule outro responsável a Ana
+   Souza antes de anonimizar (RN85).", e não altera a conta.
+
 **Pós-condições:** Dados vencidos excluídos ou anonimizados.
 
 **Regras de negócio:**
 
 - RN81 – Prazos: logs de auditoria, 6 meses; links de senha, excluídos 7 dias
-  após a criação; avisos, 1 ano após a publicação; contas desligadas,
-  anonimizadas após 1 ano letivo.
+  após a criação; avisos, 1 ano após a publicação; tarefas e anexos, 1 ano
+  após o prazo de entrega; eventos do calendário, 1 ano após o término; contas
+  desligadas, anonimizadas 1 ano após a desativação.
 - RN82 – O registro da execução não contém dados pessoais.
+- RN86 – Não podem ser anonimizadas pelo painel: a conta de quem faz a
+  operação, uma conta já anonimizada, as contas de administração técnica, o
+  professor com disciplinas no ano letivo atual e o responsável que é o único
+  de um aluno com matrícula ativa (RN85).
+- RN87 – Uma conta anonimizada não pode mais ter a matrícula nem os vínculos
+  alterados, e a anonimização não pode ser desfeita.
 
 **Critérios de aceite:**
 
 - CA01 – Dado um log com mais de 6 meses, quando a rotina for executada,
   então o registro deverá deixar de existir.
+- CA02 – Dado o único responsável de um aluno com matrícula ativa, quando a
+  secretaria tentar anonimizá-lo, então o sistema deverá recusar e indicar o
+  aluno.
 
-**Situação:** Previsto.
+**Situação:** Implementado pelo comando `python manage.py aplicar_retencao`,
+a ser agendado uma vez por dia no servidor. A data de desativação da conta é
+gravada automaticamente quando ela deixa de estar ativa. A anonimização troca
+o nome por "Usuário removido", o e-mail por um endereço inválido e único,
+invalida a senha e apaga o e-mail dos detalhes dos logs. A anonimização a
+pedido do titular é feita no perfil do usuário, no painel da secretaria. O
+descarte de turmas, notas e faltas de anos letivos encerrados continua manual
+(Plano de Retenção).
 
 ## 3. Requisitos não funcionais
 
@@ -1660,8 +1698,8 @@ técnica o atende. A numeração segue a Ficha de Caracterização do projeto.
 | ID | Categoria | Requisito (verificável) | Decisão técnica adotada | Situação |
 |---|---|---|---|---|
 | RNF01 | Segurança | Toda requisição à API, exceto login, recuperação de senha e documentos públicos, deve ser recusada com o código 401 quando não houver token válido. A sessão expira em 30 minutos sem uso e em no máximo 8 horas | Autenticação JWT (djangorestframework-simplejwt), token de renovação de 8 horas, permissão padrão `IsAuthenticated` e permissões por perfil no Django REST Framework | Implementado |
-| RNF02 | Segurança | Nenhuma senha pode ser armazenada em texto puro. Chaves de API e senhas de banco não podem estar no repositório | Hash Argon2; segredos em variáveis de ambiente (`.env` fora do Git). Previstos: limite de tentativas de login e exigência de 8 caracteres na definição de senha | Parcial |
-| RNF03 | Privacidade (LGPD) | O sistema deve registrar o aceite do termo vigente de 100% dos usuários antes do uso, não revelar quais e-mails estão cadastrados, permitir a exportação dos dados de qualquer titular e nunca incluir notas ou faltas no texto dos e-mails | Termo versionado com aceite registrado; resposta única na recuperação de senha; exportação JSON restrita à Direção; documentos de privacidade públicos; notificações só com título e link (RN61, RN66). Previstos: anonimização e descarte automático (RF22) | Parcial |
+| RNF02 | Segurança | Nenhuma senha pode ser armazenada em texto puro. Chaves de API e senhas de banco não podem estar no repositório | Hash Argon2; segredos em variáveis de ambiente (`.env` fora do Git); limite de tentativas por IP no login (10 por minuto) e na recuperação de senha (5 por minuto); mínimo de 8 caracteres na definição de senha (RN19) | Implementado |
+| RNF03 | Privacidade (LGPD) | O sistema deve registrar o aceite do termo vigente de 100% dos usuários antes do uso, não revelar quais e-mails estão cadastrados, permitir a exportação dos dados de qualquer titular e nunca incluir notas ou faltas no texto dos e-mails | Termo versionado com aceite registrado; resposta única na recuperação de senha; exportação JSON restrita à Direção; documentos de privacidade públicos; notificações só com título e link (RN61, RN66). anonimização e descarte automático (RF22) | Implementado |
 | RNF04 | Disponibilidade | O sistema deve estar acessível pela internet, por navegador, sem instalação de aplicativo | Front-end e back-end independentes; implantação prevista na Vercel (front-end) e no Railway (back-end e PostgreSQL). Hoje executa em ambiente local | Previsto |
 | RNF05 | Desempenho | As listagens devem retornar no máximo 20 itens por página, e a consulta do mural não pode fazer uma consulta ao banco por aviso | Paginação padrão do DRF; carregamento do autor na mesma consulta (`select_related`); histórico na tela limitado a 200 registros | Implementado |
 | RNF06 | Escalabilidade | O back-end não deve guardar sessão em memória, permitindo executar mais de uma instância | Autenticação JWT sem estado (stateless) e API REST versionada em `/api/v1/` | Implementado |
@@ -1670,8 +1708,8 @@ técnica o atende. A numeração segue a Ficha de Caracterização do projeto.
 | RNF09 | Resiliência | Uma falha no serviço de e-mail não pode impedir o cadastro de contas nem a publicação de conteúdo, e a espera pelo serviço não pode passar de 10 segundos | Tempo limite de 10 s na chamada ao Brevo; a conta é criada e o conteúdo é publicado mesmo com falha no envio, que fica registrada no log; erro 503 com mensagem clara na recuperação de senha | Implementado |
 | RNF10 | Auditabilidade | 100% das ações listadas na RN43 devem gerar registro com usuário, ação, IP, data e hora, e nenhum perfil pode alterar ou excluir esses registros | Modelo `AuditLog`, função única `registrar_log` e painel administrativo somente leitura | Implementado |
 | RNF11 | Observabilidade | Falhas de login, de envio de e-mail e de redefinição de senha devem ficar registradas com a causa | Registro das falhas no log de auditoria com a mensagem de erro. Previstos: monitoramento e alertas no ambiente de produção | Parcial |
-| RNF12 | Manutenibilidade | Cada domínio do sistema deve ficar em um módulo próprio, as regras de permissão devem estar centralizadas e as regras de negócio devem ter testes automatizados | Apps Django separados (`accounts`, `communication`, `audit` e `academic`); permissões em um único arquivo; cálculos em funções puras (`calculos.py`, `regras.py`); front-end em TypeScript com a API isolada em `src/api`; 143 testes automatizados (pytest e pytest-django), unitários e de integração | Implementado |
-| RNF13 | Usabilidade | A interface deve estar em português, indicar o erro de cada campo do formulário e funcionar em telas de celular. O lançamento de notas de uma turma inteira deve ser feito em uma única tela | Mensagens de erro por campo; atalhos "Primeiro acesso" e "Esqueci minha senha"; painel conforme o perfil; lançamento de notas e chamada da turma inteira em tela única (RF15, RF16). Previsto: revisão do layout das demais telas para celular | Parcial |
+| RNF12 | Manutenibilidade | Cada domínio do sistema deve ficar em um módulo próprio, as regras de permissão devem estar centralizadas e as regras de negócio devem ter testes automatizados | Apps Django separados (`accounts`, `communication`, `audit` e `academic`); permissões em um único arquivo; cálculos em funções puras (`calculos.py`, `regras.py`); front-end em TypeScript com a API isolada em `src/api`; 225 testes automatizados (pytest e pytest-django), unitários e de integração; linter Ruff com configuração versionada e pipeline de integração contínua no GitHub Actions | Implementado |
+| RNF13 | Usabilidade | A interface deve estar em português, indicar o erro de cada campo do formulário e funcionar em telas de celular. O lançamento de notas de uma turma inteira deve ser feito em uma única tela | Mensagens de erro por campo; atalhos "Primeiro acesso" e "Esqueci minha senha"; painel conforme o perfil; lançamento de notas e chamada da turma inteira em tela única (RF15, RF16); em telas de até 600 px, as tabelas viram cartões com o nome de cada coluna, os campos usam fonte de 16 px e os botões têm ao menos 40 px de altura, sem rolagem horizontal em nenhuma tela | Implementado |
 
 ## 4. Rastreabilidade com o código
 
@@ -1691,6 +1729,9 @@ técnica o atende. A numeração segue a Ficha de Caracterização do projeto.
 | RF15, RF16 | `apps/academic/views_diario.py` (`DiarioViewSet`), `models.py` (`Nota`, `Chamada`, `Falta`) | `pages/LancarNotas.tsx`, `pages/Chamada.tsx` | `test_diario_api.py` |
 | RF17 | `apps/academic/calculos.py`, `servicos.py` (`boletim_da_matricula`) | `pages/Boletim.tsx` | `test_calculos.py`, `test_diario_api.py` |
 | RF18 | `apps/academic/pdf.py` (ReportLab), `views_diario.py` (`BoletimPdfView`) | `pages/Boletim.tsx` | `test_boletim_pdf_api.py` |
-| RF21 | `apps/academic/indicadores.py`, `views_painel.py` | `pages/Painel.tsx`, `components/GraficosPainel.tsx` | `test_painel_api.py` |
+| RF19 | `apps/communication/` (`Tarefa`, `AnexoTarefa`, `TarefaViewSet`, `regras.py`, `consultas.py`, `notificar_tarefa`) | `pages/Tarefas.tsx`, `api/tarefas.ts` | `test_regras_tarefas_calendario.py`, `test_tarefas_api.py` |
+| RF20 | `apps/communication/` (`EventoCalendario`, `EventoCalendarioViewSet`, `regras.py`) | `pages/Calendario.tsx`, `api/calendario.ts` | `test_regras_tarefas_calendario.py`, `test_calendario_api.py` |
+| RF21 | `apps/academic/indicadores.py`, `views_painel.py`, `apps/communication/consultas.py` (`agenda_do_aluno`) | `pages/Painel.tsx`, `components/GraficosPainel.tsx` | `test_painel_api.py` |
+| RF22 | `apps/audit/retencao.py`, comando `aplicar_retencao`, `apps/accounts/models.py` (`desativado_em`), `apps/accounts/views.py` (ação `anonimizar`) | `pages/PlanoDeRetencao.tsx`, `pages/PerfilUsuario.tsx` | `test_retencao_prazos.py`, `test_retencao.py`, `test_anonimizar_api.py` |
 
 Os arquivos de teste ficam em `backend/apps/<app>/tests/`.

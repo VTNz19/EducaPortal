@@ -7,6 +7,8 @@ from rest_framework.views import APIView
 
 from apps.accounts.models import User
 from apps.accounts.permissions import GESTORES, AceitouTermosVigentes, IsProfessor
+from apps.communication.consultas import agenda_do_aluno
+
 from .indicadores import alunos_na_situacao, painel_do_aluno, painel_do_gestor, painel_do_professor
 from .models import Disciplina
 from .views_diario import alunos_acessiveis
@@ -37,7 +39,8 @@ class PainelView(APIView):
         aluno = next((a for a in alunos if a.id == escolhido), None)
         if escolhido is not None and aluno is None:
             raise PermissionDenied('Você não tem acesso aos indicadores deste aluno.')
-        return Response(painel_do_aluno(aluno or next(iter(alunos), None), alunos))
+        aluno = aluno or next(iter(alunos), None)
+        return Response({**painel_do_aluno(aluno, alunos), **agenda_do_aluno(aluno)})
 
 
 class PainelAlunosView(APIView):

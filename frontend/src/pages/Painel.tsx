@@ -6,6 +6,7 @@ import type {
     PainelProfessor, Situacao,
 } from '../api/painel'
 import { mensagemDeErro } from '../api/erros'
+import { formatarData } from '../api/tarefas'
 import { BarrasComMinimo, EvolucaoBimestral, PercentuaisPorTurma } from '../components/GraficosPainel'
 import { TopoPortal } from '../components/TopoPortal'
 import { RodapeLegal } from '../components/RodapeLegal'
@@ -77,6 +78,47 @@ function SeletorBimestre({ valor, onChange }: { valor: number; onChange: (numero
     )
 }
 
+function Agenda({ dados }: { dados: PainelAluno }) {
+    const { tarefas_proximas: tarefas = [], proximos_eventos: eventos = [] } = dados
+    return (
+        <div className="graficos-grid">
+            <section className="painel-card">
+                <h2>Tarefas nos próximos 7 dias</h2>
+                {tarefas.length === 0 ? (
+                    <p className="painel-ajuda">Nenhuma tarefa com entrega nos próximos 7 dias.</p>
+                ) : (
+                    <ul className="painel-agenda">
+                        {tarefas.map((t) => (
+                            <li key={t.id}>
+                                <strong>{formatarData(t.prazo)}</strong> <span>{t.titulo}</span>
+                                <span className="painel-ajuda-inline"> · {t.disciplina}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                <Link to="/tarefas" className="painel-link">Ver todas as tarefas</Link>
+            </section>
+            <section className="painel-card">
+                <h2>Próximos eventos</h2>
+                {eventos.length === 0 ? (
+                    <p className="painel-ajuda">Nenhum evento programado.</p>
+                ) : (
+                    <ul className="painel-agenda">
+                        {eventos.map((e) => (
+                            <li key={e.id}>
+                                <strong>{formatarData(e.inicio)}{e.fim !== e.inicio && ` a ${formatarData(e.fim)}`}</strong>{' '}
+                                <span>{e.titulo}</span>
+                                <span className="painel-ajuda-inline"> · {e.tipo_nome}{e.turma && ` · Turma ${e.turma}`}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+                <Link to="/calendario" className="painel-link">Abrir o calendário</Link>
+            </section>
+        </div>
+    )
+}
+
 function VisaoAluno({ dados, onTrocarAluno }: { dados: PainelAluno; onTrocarAluno: (id: number) => void }) {
     const { resumo, disciplinas = [], evolucao = [] } = dados
     return (
@@ -93,6 +135,7 @@ function VisaoAluno({ dados, onTrocarAluno }: { dados: PainelAluno; onTrocarAlun
             {dados.aluno && dados.ano && (
                 <p className="painel-ajuda painel-subtitulo">{dados.aluno.nome} · Turma {dados.turma} · {dados.ano}</p>
             )}
+            {dados.aluno && <Agenda dados={dados} />}
             {dados.aluno && dados.sem_dados && <p className="painel-aviso">{SEM_DADOS}</p>}
             {resumo && !dados.sem_dados && (
                 <>
