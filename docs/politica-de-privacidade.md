@@ -1,6 +1,6 @@
 # Política de Privacidade — EducaPortal
 
-**Versão:** 2.0 — 25 de setembro de 2026
+**Versão:** 2.1 — 16 de novembro de 2026
 
 Esta política explica quais dados pessoais o EducaPortal trata, para que
 eles são usados, com quem são compartilhados, por quanto tempo ficam
@@ -39,7 +39,7 @@ funcionalidades que ainda estão em desenvolvimento aparecem marcadas como
 | Aceite do termo | Data e versão do Termo de Uso e Aceite aceito | Todos os usuários | Registrado no primeiro acesso e a cada nova versão | Implementado |
 | Vínculo responsável e aluno | Quais alunos cada responsável acompanha | Alunos e responsáveis | Cadastro feito pela secretaria | Implementado |
 | Dados acadêmicos | Turma, disciplinas, notas, faltas, médias e percentual de frequência | Alunos | Lançados pelos professores; médias e frequência são calculadas pelo sistema | Implementado |
-| Conteúdo publicado | Avisos, tarefas e anexos, com o nome do autor | Professores, secretaria e direção | Publicados pelo próprio autor | Avisos: implementado. Tarefas e anexos: previsto |
+| Conteúdo publicado | Avisos, tarefas e anexos, com o nome do autor | Professores, secretaria e direção | Publicados pelo próprio autor | Implementado |
 | Preferências de notificação | Se o usuário quer receber avisos por e-mail | Todos os usuários | Escolha do próprio usuário | Previsto |
 
 **O que não coletamos:** CPF, RG, endereço, telefone, data de nascimento,
@@ -103,8 +103,8 @@ Medidas adotadas:
 
 | Perfil | O que pode ver |
 |---|---|
-| Aluno | Os próprios dados; as próprias notas, faltas e boletim; os avisos da escola e da sua turma; as tarefas da sua turma e o calendário (previsto) |
-| Responsável | Os próprios dados; as notas, faltas e boletim somente dos alunos vinculados a ele; os avisos e o calendário (previsto) |
+| Aluno | Os próprios dados; as próprias notas, faltas e boletim; os avisos da escola e da sua turma; as tarefas da sua turma e o calendário |
+| Responsável | Os próprios dados; as notas, faltas e boletim somente dos alunos vinculados a ele; os avisos e o calendário |
 | Professor | Os próprios dados; as notas e faltas das disciplinas em que leciona e, para acompanhamento, a lista dos seus alunos abaixo do mínimo; os avisos, podendo editar e excluir apenas os que publicou |
 | Secretaria | O cadastro de todos os usuários, com turma e vínculos; os dados acadêmicos de todos os alunos, para emissão de documentos; os indicadores das turmas, sem nomes de alunos |
 | Direção | Tudo o que a secretaria vê e, com exclusividade, os registros de auditoria de cada usuário e a exportação desses dados |
@@ -143,15 +143,15 @@ Em resumo:
 - **Conta:** desativada no dia do desligamento da escola e anonimizada após
   1 ano letivo.
 - **Notas e faltas:** durante o vínculo do aluno e por 1 ano letivo depois
-  do desligamento (descarte automático previsto).
+  do desligamento (descarte feito pela secretaria).
 - **Avisos:** 1 ano após a publicação. **Tarefas e anexos:** 1 ano após o
-  prazo de entrega (previsto).
+  prazo de entrega.
 - **Boletins em PDF e exportações de dados:** não ficam armazenados no
   servidor; são gerados no momento do pedido.
 - **Cópias de segurança:** 30 dias (previsto, em produção).
 
 Ao fim de cada prazo, os dados são excluídos ou anonimizados por uma rotina
-automática diária (previsto).
+automática diária.
 
 ## 8. Armazenamento no seu navegador (cookies)
 
@@ -177,7 +177,7 @@ automática diária (previsto).
   que falharam.
 - Chaves de acesso a serviços externos guardadas fora do código-fonte.
 - Comunicação criptografada (HTTPS) em todo o tráfego (previsto, em produção).
-- Limite de tentativas de login seguidas (previsto).
+- Limite de tentativas de login e de pedidos de redefinição de senha por minuto.
 
 Nenhum sistema é totalmente imune a falhas. Se você perceber algo estranho
 na sua conta, troque a senha e avise pelo canal de privacidade.
@@ -194,7 +194,7 @@ idade, o responsável legal também pode fazer o pedido.
 | Correção de dados incompletos ou errados | A secretaria corrige o cadastro pelo painel administrativo | Implementado |
 | Portabilidade | O mesmo arquivo exportado, em formato JSON | Implementado |
 | Informação sobre compartilhamento | Descrita na seção 6 desta política | Implementado |
-| Anonimização, bloqueio ou eliminação de dados desnecessários | A secretaria anonimiza a conta pelo painel da secretaria | Previsto |
+| Anonimização, bloqueio ou eliminação de dados desnecessários | A secretaria anonimiza a conta pelo painel da secretaria | Implementado |
 | Oposição | Desligar as notificações por e-mail no próprio perfil (previsto); outros casos pelo canal de privacidade | Parcialmente previsto |
 | Revogação do consentimento | Não se aplica, porque o sistema não usa o consentimento como base legal | Não se aplica |
 | Revisão de decisões automatizadas | Não se aplica, porque o sistema não toma decisões automatizadas | Não se aplica |
@@ -234,5 +234,6 @@ Aceite é apresentado novamente para aceite no próximo acesso.
 |---|---|---|
 | 1.0 | 22/09/2026 | Primeira versão |
 | 2.0 | 25/09/2026 | Revisão completa: novos perfis de acesso, bases legais, dados de adolescentes, serviços externos (Brevo, Railway e Vercel), prazos de retenção, armazenamento no navegador e incidentes |
+| 2.1 | 16/11/2026 | Atualização das situações: tarefas, calendário, descarte automático e limite de tentativas implementados, e anonimização a pedido do titular pelo painel. Sem mudança no tratamento de dados |
 
 Consulte também o [Termo de Uso e Aceite](termo-de-uso.md).

@@ -1,6 +1,6 @@
 # Plano de Retenção e Descarte de Dados — EducaPortal
 
-**Versão:** 1.0 — 25 de setembro de 2026
+**Versão:** 1.2 — 16 de novembro de 2026
 
 ## 1. Objetivo
 
@@ -38,17 +38,17 @@ A coluna "Situação" das tabelas indica o estado de cada item:
 
 | Categoria | Dados | Finalidade | Prazo ou critério | Destino ao final | Situação |
 |---|---|---|---|---|---|
-| Conta de usuário | Nome, e-mail, papel, hash da senha | Autenticar e identificar o usuário | Enquanto a pessoa tiver vínculo com a escola. No desligamento, a conta é desativada no mesmo dia e anonimizada após 1 ano letivo | Anonimizar | Conta: implementado. Anonimização: previsto |
+| Conta de usuário | Nome, e-mail, papel, hash da senha | Autenticar e identificar o usuário | Enquanto a pessoa tiver vínculo com a escola. No desligamento, a conta é desativada no mesmo dia e anonimizada após 1 ano letivo | Anonimizar | Implementado |
 | Vínculo responsável e aluno | Quem é responsável por qual aluno | Permitir que o responsável acompanhe apenas o aluno vinculado | Enquanto o aluno tiver vínculo com a escola | Excluir junto com a conta do aluno | Previsto |
-| Token de primeiro acesso ou redefinição de senha | Código do token, data de criação | Permitir que o usuário crie ou troque a senha | Vale por 1 hora e só pode ser usado uma vez. É excluído 7 dias após a criação | Excluir | Validade e uso único: implementado. Exclusão após 7 dias: previsto |
-| Log de auditoria | Ação, data e hora, endereço IP, usuário, e-mail informado no login | Segurança e rastreabilidade | 6 meses a partir do registro | Excluir | Registro: implementado. Descarte: previsto |
+| Token de primeiro acesso ou redefinição de senha | Código do token, data de criação | Permitir que o usuário crie ou troque a senha | Vale por 1 hora e só pode ser usado uma vez. É excluído 7 dias após a criação | Excluir | Implementado |
+| Log de auditoria | Ação, data e hora, endereço IP, usuário, e-mail informado no login | Segurança e rastreabilidade | 6 meses a partir do registro | Excluir | Implementado |
 
 ### 3.2 Dados acadêmicos
 
 | Categoria | Dados | Finalidade | Prazo ou critério | Destino ao final | Situação |
 |---|---|---|---|---|---|
-| Turmas, disciplinas e matrículas | Turma do aluno, disciplinas, professores atribuídos | Organizar o acesso por turma | Durante o ano letivo e por 1 ano letivo após o seu término | Excluir | Registro: implementado. Descarte: previsto |
-| Notas e faltas | Notas, faltas, médias e percentual de frequência calculados | Acompanhamento escolar e emissão do boletim | Durante o vínculo do aluno e por 1 ano letivo após o desligamento | Excluir do EducaPortal | Registro: implementado. Descarte: previsto |
+| Turmas, disciplinas e matrículas | Turma do aluno, disciplinas, professores atribuídos | Organizar o acesso por turma | Durante o ano letivo e por 1 ano letivo após o seu término | Excluir | Registro: implementado. Descarte: manual, pela secretaria |
+| Notas e faltas | Notas, faltas, médias e percentual de frequência calculados | Acompanhamento escolar e emissão do boletim | Durante o vínculo do aluno e por 1 ano letivo após o desligamento | Excluir do EducaPortal | Registro: implementado. Descarte: manual, pela secretaria |
 | Boletim em PDF | Notas, faltas, médias e frequência do aluno | Entrega ao aluno e aos responsáveis | Não é armazenado: o PDF é gerado no servidor no momento do download | Não se aplica | Implementado |
 | Indicadores do painel (dashboard) | Médias e frequência do próprio aluno | Acompanhamento pelo aluno e pelo responsável | Não são armazenados: são calculados a partir das notas e faltas no momento da consulta | Não se aplica | Implementado |
 
@@ -62,10 +62,10 @@ prazo acima.
 
 | Categoria | Dados | Finalidade | Prazo ou critério | Destino ao final | Situação |
 |---|---|---|---|---|---|
-| Avisos do mural (gerais ou por turma) | Título, conteúdo, autor, turma | Comunicação escolar | 1 ano após a publicação | Excluir | Mural geral e por turma: implementado. Descarte: previsto |
-| Tarefas | Título, descrição, prazo de entrega, professor, turma | Organizar as atividades da turma | 1 ano após o prazo de entrega da tarefa | Excluir | Previsto |
-| Anexos das tarefas | Arquivos enviados pelo professor | Material de apoio da tarefa | Excluídos junto com a tarefa (1 ano após o prazo de entrega) | Excluir o arquivo do armazenamento | Previsto |
-| Calendário escolar | Eventos (provas, feriados, reuniões), sem dados pessoais | Organização do ano letivo | Até 1 ano após o fim do ano letivo | Excluir | Previsto |
+| Avisos do mural (gerais ou por turma) | Título, conteúdo, autor, turma | Comunicação escolar | 1 ano após a publicação | Excluir | Implementado |
+| Tarefas | Título, descrição, prazo de entrega, professor, turma | Organizar as atividades da turma | 1 ano após o prazo de entrega da tarefa | Excluir | Implementado |
+| Anexos das tarefas | Arquivos enviados pelo professor | Material de apoio da tarefa | Excluídos junto com a tarefa (1 ano após o prazo de entrega) | Excluir o arquivo do armazenamento | Implementado |
+| Calendário escolar | Eventos (provas, feriados, reuniões), sem dados pessoais | Organização do ano letivo | 1 ano após o término do evento | Excluir | Implementado |
 | E-mails transacionais e notificações | Nome, e-mail, conteúdo da mensagem | Primeiro acesso, recuperação de senha e avisos de novos conteúdos | O EducaPortal não guarda cópia dos e-mails. As notificações não incluem notas nem faltas, só avisam que há algo novo no portal. O Brevo mantém registros de envio conforme a política de privacidade dele | Não se aplica | Implementado |
 
 ### 3.4 Atendimento ao titular, infraestrutura e testes
@@ -83,17 +83,18 @@ período para a guarda de registros de acesso a aplicações.
 
 ## 4. Como o descarte é executado
 
-Os três mecanismos abaixo estão previstos para a entrega final do projeto.
-
-- **Rotina automática:** um comando do sistema
-  (`python manage.py aplicar_retencao`) é executado uma vez por dia. Ele
-  exclui os logs, tokens, avisos, tarefas (com seus anexos), turmas, notas,
-  faltas e eventos que passaram do prazo, e anonimiza as contas desligadas há
-  mais de 1 ano letivo.
-- **Registro do descarte:** cada execução grava no log de auditoria quantos
+- **Rotina automática (implementada):** o comando
+  `python manage.py aplicar_retencao` é executado uma vez por dia. Ele exclui
+  os logs, links de senha, avisos, tarefas (com seus anexos) e eventos que
+  passaram do prazo, e anonimiza as contas desligadas há mais de 1 ano. Se
+  ocorrer um erro, nada é alterado naquela execução e a falha fica registrada.
+  O descarte de turmas, notas e faltas de anos letivos encerrados é feito
+  pela secretaria, porque depende da confirmação de que o histórico já está
+  no sistema oficial da escola.
+- **Registro do descarte (implementado):** cada execução grava no log de auditoria quantos
   registros de cada tipo foram excluídos ou anonimizados, sem incluir dados
   pessoais.
-- **Anonimização de conta:** o nome passa a ser "Usuário removido", o e-mail
+- **Anonimização de conta (implementada):** o nome passa a ser "Usuário removido", o e-mail
   é substituído por um endereço inválido e único, a senha deixa de funcionar
   e a conta fica inativa. O e-mail também é apagado dos detalhes dos logs
   antigos dessa pessoa. Os avisos e as tarefas que ela publicou continuam
@@ -110,7 +111,7 @@ pedir a exclusão dos seus dados antes do fim do prazo:
    legal (por exemplo, notas do ano letivo em andamento). Se precisar, informa
    ao titular quais dados serão mantidos, o motivo e o prazo.
 4. Os demais dados são anonimizados pela secretaria, na página de perfil do
-   usuário no painel da secretaria (funcionalidade prevista).
+   usuário no painel da secretaria. A anonimização não pode ser desfeita.
 5. O atendimento fica registrado no log de auditoria, e o titular recebe uma
    resposta em até 15 dias.
 
@@ -131,3 +132,5 @@ funcionalidade passar a tratar dados pessoais.
 | Versão | Data | Alteração |
 |---|---|---|
 | 1.0 | 25/09/2026 | Primeira versão |
+| 1.1 | 15/11/2026 | Rotina automática de descarte e anonimização implementada; prazo dos eventos contado a partir do término |
+| 1.2 | 16/11/2026 | Anonimização a pedido do titular pelo perfil do usuário, no painel da secretaria |
