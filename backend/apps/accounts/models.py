@@ -24,6 +24,8 @@ class User(AbstractUser):
     )
     termos_versao_aceita = models.CharField("versão do termo aceita", max_length=10, blank=True, default="")
     termos_aceitos_em = models.DateTimeField("termo aceito em", null=True, blank=True)
+    desativado_em = models.DateTimeField("desativada em", null=True, blank=True, editable=False)
+    anonimizado_em = models.DateTimeField("anonimizada em", null=True, blank=True, editable=False)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
@@ -34,6 +36,17 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.get_full_name() or self.username} ({self.email})"
+
+    def save(self, *args, **kwargs):
+        """Guarda a data do desligamento, que conta o prazo de anonimização da conta (RN81)."""
+        if self.is_active:
+            self.desativado_em = None
+        elif self.desativado_em is None:
+            self.desativado_em = timezone.now()
+        campos = kwargs.get("update_fields")
+        if campos is not None and "is_active" in campos:
+            kwargs["update_fields"] = {*campos, "desativado_em"}
+        super().save(*args, **kwargs)
 
 
 class PasswordResetToken(models.Model):

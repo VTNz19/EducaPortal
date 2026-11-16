@@ -16,6 +16,7 @@ from apps.academic.models import (
     Turma,
     VinculoResponsavel,
 )
+from apps.communication.models import EventoCalendario, Tarefa
 
 pytestmark = [pytest.mark.django_db, pytest.mark.integracao]
 
@@ -240,3 +241,33 @@ def test_painel_exige_o_aceite_do_termo_vigente(criar_usuario, cliente_autentica
     response = cliente_autenticado(criar_usuario('aluno', aceitou_termos=False)).get(URL)
 
     assert response.status_code == 403
+
+
+def test_aluno_ve_tarefas_dos_proximos_7_dias_e_eventos_da_turma(escola, criar_usuario, cliente_autenticado):
+    hoje = timezone.localdate()
+    for titulo, dias in [('Lista 1', 2), ('Lista 2', 9), ('Lista antiga', -1)]:
+        Tarefa.objects.create(disciplina=escola['disciplina'], titulo=titulo, prazo=hoje + timedelta(days=dias))
+    outra = Turma.objects.create(ano_letivo=escola['turma'].ano_letivo, nome='3º B', serie='3ª série', turno='tarde')
+    EventoCalendario.objects.create(titulo='Prova do 3º A', tipo='prova', inicio=hoje, fim=hoje,
+                                    turma=escola['turma'])
+    EventoCalendario.objects.create(titulo='Prova do 3º B', tipo='prova', inicio=hoje, fim=hoje, turma=outra)
+    EventoCalendario.objects.create(titulo='Feriado', tipo='feriado', inicio=hoje + timedelta(days=5),
+                                    fim=hoje + timedelta(days=5))
+    EventoCalendario.objects.create(titulo='Passado', tipo='evento', inicio=hoje - timedelta(days=3),
+                                    fim=hoje - timedelta(days=2))
+
+    dados = cliente_autenticado(escola['ana']).get(URL).json()
+
+    assert [t['titulo'] for t in dados['tarefas_proximas']] == ['Lista 1']
+    assert dados['tarefas_proximas'][0]['disciplina'] == 'Matemática'
+    assert [e['titulo'] for e in dados['proximos_eventos']] == ['Prova do 3º A', 'Feriado']
+
+
+def test_responsavel_ve_a_agenda_do_aluno_escolhido(escola, criar_usuario, cliente_autenticado):
+    rita = criar_usuario('responsavel', email='rita@exemplo.com')
+    VinculoResponsavel.objects.create(responsavel=rita, aluno=escola['ana'])
+    Tarefa.objects.create(disciplina=escola['disciplina'], titulo='Lista 1', prazo=timezone.localdate())
+
+    dados = cliente_autenticado(rita).get(URL, {'aluno': escola['ana'].id}).json()
+
+    assert [t['titulo'] for t in dados['tarefas_proximas']] == ['Lista 1']

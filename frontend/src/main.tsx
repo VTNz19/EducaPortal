@@ -4,6 +4,10 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from './context/AuthContext'
+import './celular.css'
+import { ativarTabelasResponsivas } from './tabelasResponsivas'
+
+ativarTabelasResponsivas()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

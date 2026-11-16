@@ -3,6 +3,7 @@ from django.db.models import OuterRef, Q, Subquery
 from django.utils import timezone
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -13,6 +14,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from apps.academic.models import Matricula
 from apps.audit.models import AuditLog
+from apps.audit.retencao import CONFIRMACAO_ANONIMIZAR, anonimizar_a_pedido, impedimentos_para_anonimizar
 from apps.audit.serializers import AuditLogSerializer
 from apps.audit.utils import registrar_log
 
@@ -225,3 +227,17 @@ class UsuarioViewSet(
         }
         registrar_log(request.user, 'dados_exportados', detalhes=f'usuario id={usuario.id}', request=request)
         return Response(dados)
+
+    @action(detail=True, methods=['post'])
+    def anonimizar(self, request, pk=None):
+        """Anonimização a pedido do titular (Plano de Retenção, seção 5). A ação não pode ser desfeita."""
+        usuario = self.get_object()
+        if request.data.get('confirmacao') != CONFIRMACAO_ANONIMIZAR:
+            raise ValidationError({'confirmacao': [f'Digite {CONFIRMACAO_ANONIMIZAR} para confirmar.']})
+        motivos = impedimentos_para_anonimizar(usuario, request.user)
+        if motivos:
+            raise ValidationError({'detail': motivos})
+        anonimizar_a_pedido(usuario)
+        registrar_log(request.user, 'conta_anonimizada', detalhes=f'usuario id={usuario.id}, a pedido do titular',
+                      request=request)
+        return Response(UsuarioDetalheSerializer(self.get_queryset().get(pk=usuario.pk)).data)

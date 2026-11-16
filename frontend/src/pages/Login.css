@@ -170,3 +170,13 @@
 .login-links a {
     color: #1F4B43;
 }
+
+.login-field-regra {
+    color: #555;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.login-field-regra-falta {
+    color: #c0392b;
+}

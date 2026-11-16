@@ -1,8 +1,8 @@
-"""Notificação de avisos por e-mail (RF08, RN35)."""
+"""Notificação de avisos (RF08, RN35) e de tarefas (RF19) por e-mail."""
 from django.utils import timezone
 
 from apps.academic.models import Matricula, VinculoResponsavel
-from apps.academic.servicos import notificar
+from apps.academic.servicos import emails_do_aluno_e_responsaveis, notificar
 from apps.accounts.models import User
 from apps.audit.utils import registrar_log
 
@@ -32,3 +32,18 @@ def notificar_aviso(aviso, request=None):
         registrar_log(aviso.autor, 'aviso_notificado',
                       detalhes=f'aviso id={aviso.id}, {len(destinatarios)} destinatário(s)', request=request)
     return ok
+
+
+def notificar_tarefa(tarefa, request=None):
+    """Avisa os alunos ativos da turma e os responsáveis, só com o título, o prazo e o link (RF19).
+
+    Devolve None quando não há destinatários. Uma falha fica no log e a tarefa continua publicada.
+    """
+    alunos = User.objects.filter(matriculas__turma_id=tarefa.disciplina.turma_id,
+                                 matriculas__situacao=Matricula.Situacao.ATIVA, is_active=True).distinct()
+    destinatarios = sorted(set(emails_do_aluno_e_responsaveis(list(alunos))))
+    if not destinatarios:
+        return None
+    return notificar(destinatarios, f'Nova tarefa no EducaPortal: {tarefa.titulo}',
+                     f'Foi publicada a tarefa "{tarefa.titulo}", com entrega até {tarefa.prazo:%d/%m/%Y}.',
+                     '/tarefas', tarefa.autor, request)

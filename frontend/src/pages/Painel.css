@@ -126,3 +126,15 @@
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+.painel-agenda {
+    list-style: none;
+    margin: 0 0 12px;
+    padding: 0;
+    text-align: left;
+}
+
+.painel-agenda li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eeede9;
+}

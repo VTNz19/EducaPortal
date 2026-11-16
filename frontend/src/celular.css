@@ -1,0 +1,171 @@
+/* Ajustes para telas de celular (RNF13). Os seletores começam com body para valerem sobre os estilos
+   de cada página, que são carregados depois deste arquivo. */
+
+@media (max-width: 600px) {
+    body .painel-conteudo,
+    body .mural-conteudo {
+        padding: 24px 12px;
+    }
+
+    body .painel-conteudo h1,
+    body .mural-conteudo h1 {
+        font-size: 26px;
+    }
+
+    body .painel-card {
+        padding: 16px 14px;
+        margin-bottom: 16px;
+    }
+
+    /* Campos com 16px evitam o zoom automático do navegador do iPhone ao tocar no campo. */
+    body input,
+    body select,
+    body textarea {
+        font-size: 16px !important;
+    }
+
+    /* Áreas de toque de pelo menos 40px de altura. */
+    body .painel-botao,
+    body .painel-botao-secundario,
+    body .painel-botao-perigo,
+    body .aviso-card-acoes button,
+    body .mural-botao-enviar,
+    body .login-submit {
+        min-height: 40px;
+    }
+
+    body .painel-botao-link {
+        min-height: 36px;
+    }
+
+    body .aviso-card-acoes {
+        gap: 8px;
+    }
+
+    body .aviso-card-acoes button {
+        padding: 8px 14px;
+        font-size: 14px;
+    }
+
+    body .mural-topbar-link {
+        display: inline-block;
+        padding: 6px 0;
+    }
+
+    body .painel-acoes,
+    body .painel-acoes-linha {
+        flex-wrap: wrap;
+    }
+
+    body .painel-opcao {
+        flex-wrap: wrap;
+        min-height: 40px;
+        padding: 6px 0;
+    }
+
+    body .painel-opcao input[type='checkbox'],
+    body .painel-opcao input[type='radio'] {
+        width: 20px;
+        height: 20px;
+    }
+
+    body .painel-opcao .painel-ajuda-inline {
+        flex-basis: 100%;
+        padding-left: 28px;
+    }
+
+    body table.tabela-cartoes td:first-child a {
+        display: inline-block;
+        padding: 6px 0;
+    }
+
+    /* Tabelas em cartões: uma linha por cartão, com o nome da coluna ao lado de cada valor. */
+    body .painel-tabela-wrapper {
+        overflow-x: visible;
+    }
+
+    body table.tabela-cartoes,
+    body .legal-page table.tabela-cartoes {
+        display: block;
+        width: 100%;
+        overflow: visible;
+        border: none;
+        margin: 8px 0;
+    }
+
+    body table.tabela-cartoes thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    body table.tabela-cartoes tbody,
+    body table.tabela-cartoes tr {
+        display: block;
+        width: 100%;
+    }
+
+    body table.tabela-cartoes tr {
+        border: 1px solid #e3e2dd;
+        border-radius: 8px;
+        padding: 6px 12px;
+        margin-bottom: 10px;
+        background: #fff;
+    }
+
+    body table.tabela-cartoes td,
+    body .legal-page table.tabela-cartoes td {
+        display: block;
+        position: relative;
+        min-height: 20px;
+        padding: 7px 0 7px 40%;
+        border: none;
+        border-bottom: 1px solid #f0efeb;
+        text-align: left;
+        overflow-wrap: anywhere;
+    }
+
+    body table.tabela-cartoes td:last-child {
+        border-bottom: none;
+    }
+
+    body table.tabela-cartoes td::before {
+        content: attr(data-rotulo);
+        position: absolute;
+        left: 0;
+        top: 7px;
+        width: calc(40% - 12px);
+        font-weight: 600;
+        font-size: 13px;
+        color: #1F4B43;
+    }
+
+    /* A primeira célula é o título do cartão (disciplina, nome, categoria). */
+    body table.tabela-cartoes td:first-child,
+    body .legal-page table.tabela-cartoes td:first-child {
+        font-size: 15px;
+        font-weight: 600;
+        padding: 8px 0;
+    }
+
+    body table.tabela-cartoes td:first-child::before {
+        content: none;
+    }
+
+    body table.tabela-cartoes td[colspan] {
+        padding-left: 0;
+    }
+
+    body table.tabela-cartoes td[colspan]::before {
+        content: none;
+    }
+
+    body table.tabela-cartoes td input,
+    body table.tabela-cartoes td select {
+        width: 100%;
+        max-width: 160px;
+    }
+}

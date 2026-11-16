@@ -16,6 +16,23 @@ export interface DisciplinaDoAluno {
     abaixo_frequencia: boolean
 }
 
+export interface TarefaProxima {
+    id: number
+    titulo: string
+    disciplina: string
+    prazo: string
+}
+
+export interface EventoProximo {
+    id: number
+    titulo: string
+    tipo: string
+    tipo_nome: string
+    inicio: string
+    fim: string
+    turma: string | null
+}
+
 export interface PainelAluno {
     perfil: 'aluno'
     alunos: { id: number; nome: string }[]
@@ -31,6 +48,8 @@ export interface PainelAluno {
     }
     disciplinas?: DisciplinaDoAluno[]
     evolucao?: PontoEvolucao[]
+    tarefas_proximas: TarefaProxima[]
+    proximos_eventos: EventoProximo[]
 }
 
 export interface Pendencia {

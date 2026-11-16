@@ -1,0 +1,100 @@
+.calendario-navegacao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.calendario-navegacao h2 {
+    margin: 0;
+}
+
+.calendario-grade {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 4px;
+}
+
+.calendario-semana {
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.calendario-dia {
+    min-height: 84px;
+    border: 1px solid #e7e6e2;
+    border-radius: 6px;
+    padding: 4px;
+    text-align: left;
+    background: #fff;
+    overflow: hidden;
+}
+
+.calendario-dia-fora {
+    background: #f7f7f4;
+    border-style: dashed;
+}
+
+.calendario-dia-hoje {
+    border: 2px solid #1F4B43;
+}
+
+.calendario-numero {
+    font-size: 12px;
+    font-weight: 600;
+    color: #444;
+}
+
+.calendario-evento {
+    display: block;
+    margin-top: 3px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 11px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.calendario-tipo-prova { background: #fde8e6; color: #8f2a1f; }
+.calendario-tipo-feriado { background: #fff6db; color: #7a5b00; }
+.calendario-tipo-reuniao { background: #e6eefb; color: #23457a; }
+.calendario-tipo-evento { background: #e8f1ee; color: #1F4B43; }
+
+.calendario-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+}
+
+.calendario-lista li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eeede9;
+}
+
+.calendario-lista-titulo {
+    font-weight: 600;
+    flex: 1 1 200px;
+}
+
+@media (max-width: 600px) {
+    .calendario-dia {
+        min-height: 52px;
+    }
+
+    .calendario-dia .calendario-evento {
+        font-size: 0;
+        height: 6px;
+        padding: 0;
+    }
+}

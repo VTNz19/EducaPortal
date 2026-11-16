@@ -38,6 +38,7 @@ export interface PessoaVinculada {
 export interface UsuarioDetalhe extends UsuarioResumo {
     first_name: string
     last_name: string
+    anonimizado_em: string | null
     matriculas: MatriculaResumo[]
     vinculos: PessoaVinculada[]
 }
@@ -111,4 +112,10 @@ export async function listarLogsUsuario(id: number): Promise<RegistroLog[]> {
 export async function exportarDadosUsuario(id: number): Promise<ExportacaoUsuario> {
     const response = await api.get(`/usuarios/${id}/exportar/`)
     return response.data
+}
+
+export const CONFIRMACAO_ANONIMIZAR = 'ANONIMIZAR'
+
+export async function anonimizarUsuario(id: number, confirmacao: string): Promise<UsuarioDetalhe> {
+    return (await api.post(`/usuarios/${id}/anonimizar/`, { confirmacao })).data
 }

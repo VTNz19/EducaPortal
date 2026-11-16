@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './Login.css'
+import { CampoSenha } from '../components/CampoSenha'
 
 function validarEmail(email: string): string {
     if (!email.trim()) return 'Informe o e-mail.'
@@ -86,9 +87,8 @@ export function Login() {
 
                         <div className="login-field">
                             <label htmlFor="senha">Senha</label>
-                            <input
+                            <CampoSenha
                                 id="senha"
-                                type="password"
                                 value={senha}
                                 onChange={(e) => setSenha(e.target.value)}
                                 onBlur={() => setErroSenha(validarSenha(senha))}
