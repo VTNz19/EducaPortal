@@ -42,4 +42,4 @@ def test_secretaria_continua_vendo_a_lista_e_o_perfil_das_contas(ana, criar_usua
 
     assert lista.status_code == 200
     assert perfil.status_code == 200
-    assert perfil.json()['email'] == 'ana@exemplo.com'
+    assert perfil.json()['email'] == 'an***@exemplo.com'

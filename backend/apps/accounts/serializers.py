@@ -1,11 +1,12 @@
-from django.conf import settings
 from django.db import transaction
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from apps.academic.models import Matricula, Turma, VinculoResponsavel
 
-from .models import User
+from .documentos import versao_vigente
+from .mascaras import email_para
+from .models import DocumentoLegal, User
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -36,7 +37,7 @@ class MeSerializer(serializers.ModelSerializer):
         return obj.get_full_name() or obj.username
 
     def get_versao_termos_atual(self, obj):
-        return settings.VERSAO_TERMOS
+        return versao_vigente()
 
 
 class EsqueciSenhaSerializer(serializers.Serializer):
@@ -67,6 +68,7 @@ PAPEIS_CRIAVEIS_PELA_SECRETARIA = [
 
 class UsuarioListaSerializer(serializers.ModelSerializer):
     nome = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
     turma = serializers.CharField(source='turma_atual', read_only=True, default=None)
 
     class Meta:
@@ -75,6 +77,16 @@ class UsuarioListaSerializer(serializers.ModelSerializer):
 
     def get_nome(self, obj):
         return obj.get_full_name() or obj.username
+
+    def get_email(self, obj):
+        return self.email_de(obj)
+
+    def email_de(self, usuario):
+        """Mascarado para quem não é o titular; completo só na exportação dos dados ao titular (RN88)."""
+        if self.context.get('emails_completos'):
+            return usuario.email
+        request = self.context.get('request')
+        return email_para(usuario, getattr(request, 'user', None))
 
 
 class CriarUsuarioSerializer(serializers.ModelSerializer):
@@ -163,4 +175,35 @@ class UsuarioDetalheSerializer(UsuarioListaSerializer):
             pessoas = [v.aluno for v in obj.vinculos_como_responsavel.select_related('aluno')]
         else:
             return []
-        return [{'id': p.id, 'nome': _nome(p), 'email': p.email} for p in pessoas]
+        return [{'id': p.id, 'nome': _nome(p), 'email': self.email_de(p)} for p in pessoas]
+
+
+class DocumentoLegalSerializer(serializers.ModelSerializer):
+    nome = serializers.CharField(source='get_tipo_display', read_only=True)
+    publicado_por = serializers.SerializerMethodField()
+
+    class Meta:
+        model = DocumentoLegal
+        fields = ['tipo', 'nome', 'versao', 'conteudo', 'resumo', 'publicado_em', 'publicado_por']
+
+    def get_publicado_por(self, obj):
+        return _nome(obj.publicado_por) if obj.publicado_por else None
+
+
+class PublicarDocumentoSerializer(serializers.Serializer):
+    conteudo = serializers.CharField(
+        trim_whitespace=False, max_length=100_000,
+        error_messages={'blank': 'O texto do documento não pode ficar vazio.',
+                        'required': 'Informe o texto do documento.'},
+    )
+    resumo = serializers.CharField(
+        max_length=300,
+        error_messages={'blank': 'Descreva o que mudou nesta versão.', 'required': 'Descreva o que mudou nesta versão.',
+                        'max_length': 'O resumo deve ter no máximo 300 caracteres.'},
+    )
+
+    def validate_conteudo(self, value):
+        if len(value.strip()) < 200:
+            raise serializers.ValidationError(
+                'O texto está curto demais para um documento legal (mínimo de 200 caracteres).')
+        return value.strip() + '\n'

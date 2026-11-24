@@ -4,8 +4,8 @@ Atravessa todas as camadas sem mocks: login real com JWT, aceite do termo,
 criação, listagem e exclusão do aviso, conferindo o banco e a auditoria.
 """
 import pytest
-from django.conf import settings
 
+from apps.accounts.documentos import versao_vigente
 from apps.audit.models import AuditLog
 from apps.communication.models import Aviso
 from conftest import SENHA_PADRAO
@@ -24,7 +24,7 @@ def test_fluxo_completo_de_login_aceite_do_termo_publicacao_e_exclusao_de_aviso(
 
     assert api_client.get('/api/v1/avisos/').status_code == 403
 
-    aceite = api_client.post('/api/v1/auth/aceitar-termos/', {'versao': settings.VERSAO_TERMOS}, format='json')
+    aceite = api_client.post('/api/v1/auth/aceitar-termos/', {'versao': versao_vigente()}, format='json')
     assert aceite.status_code == 200
     assert aceite.json()['precisa_aceitar_termos'] is False
 
@@ -43,4 +43,4 @@ def test_fluxo_completo_de_login_aceite_do_termo_publicacao_e_exclusao_de_aviso(
     acoes = list(AuditLog.objects.filter(usuario=professor).order_by('id').values_list('acao', flat=True))
     assert acoes == ['login_sucesso', 'termos_aceitos', 'aviso_criado', 'aviso_excluido']
     professor.refresh_from_db()
-    assert professor.termos_versao_aceita == settings.VERSAO_TERMOS
+    assert professor.termos_versao_aceita == versao_vigente()

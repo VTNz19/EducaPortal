@@ -1,6 +1,6 @@
 import termo from '../../../docs/termo-de-uso.md?raw'
-import { DocumentoLegal } from '../components/DocumentoLegal'
+import { DocumentoVigente } from '../components/DocumentoLegal'
 
 export function TermoDeUso() {
-    return <DocumentoLegal conteudo={termo} />
+    return <DocumentoVigente tipo="termo" padrao={termo} />
 }

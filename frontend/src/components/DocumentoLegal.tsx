@@ -2,7 +2,9 @@ import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Link } from 'react-router-dom'
+import type { TipoDocumento } from '../api/documentos'
 import { useAuth } from '../context/AuthContext'
+import { useDocumento } from './useDocumento'
 import '../pages/LegalPage.css'
 
 const ROTAS_DOS_DOCUMENTOS: Record<string, string> = {
@@ -45,4 +47,12 @@ export function DocumentoLegal({ conteudo }: DocumentoLegalProps) {
             <ConteudoMarkdown conteudo={conteudo} />
         </div>
     )
+}
+
+export function DocumentoVigente({ tipo, padrao }: { tipo: TipoDocumento; padrao: string }) {
+    const conteudo = useDocumento(tipo, padrao)
+    if (conteudo === null) {
+        return <p className="legal-page">Carregando...</p>
+    }
+    return <DocumentoLegal conteudo={conteudo} />
 }

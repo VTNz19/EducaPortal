@@ -41,6 +41,8 @@ async function renovarAccessToken(): Promise<string | null> {
     }
 }
 
+const MENSAGEM_NOVO_ACEITE = 'É preciso aceitar a versão atual do Termo de Uso e Aceite.'
+
 interface ConfigComRetry extends InternalAxiosRequestConfig {
     _retry?: boolean
 }
@@ -59,6 +61,11 @@ api.interceptors.response.use(
                 original.headers.Authorization = `Bearer ${novoToken}`
                 return api(original)
             }
+        }
+        // a Direção publicou uma nova versão dos documentos enquanto a pessoa usava o sistema (RF23)
+        if (error.response?.status === 403 && error.response.data?.detail === MENSAGEM_NOVO_ACEITE
+            && window.location.pathname !== '/aceite-termos') {
+            window.location.assign('/aceite-termos')
         }
         return Promise.reject(error)
     }

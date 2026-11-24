@@ -18,6 +18,7 @@ import { PlanoDeRetencao } from './pages/PlanoDeRetencao'
 import { AceiteTermos } from './pages/AceiteTermos'
 import { Tarefas } from './pages/Tarefas'
 import { Calendario } from './pages/Calendario'
+import { DocumentosLegais } from './pages/DocumentosLegais'
 
 const Painel = lazy(() => import('./pages/Painel').then((m) => ({ default: m.Painel })))
 
@@ -97,6 +98,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Tarefas />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/direcao/documentos"
+        element={
+          <ProtectedRoute papeis={['direcao']}>
+            <DocumentosLegais />
           </ProtectedRoute>
         }
       />
