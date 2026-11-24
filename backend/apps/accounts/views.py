@@ -1,9 +1,8 @@
-from django.conf import settings
 from django.db.models import OuterRef, Q, Subquery
 from django.utils import timezone
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -18,14 +17,17 @@ from apps.audit.retencao import CONFIRMACAO_ANONIMIZAR, anonimizar_a_pedido, imp
 from apps.audit.serializers import AuditLogSerializer
 from apps.audit.utils import registrar_log
 
+from .documentos import descrever_versao, documento_vigente, publicar, versao_de, versao_vigente
 from .emails import enviar_link_definir_senha
-from .models import PasswordResetToken, User
+from .models import DocumentoLegal, PasswordResetToken, User
 from .permissions import AceitouTermosVigentes, IsDirecao, IsGestor
 from .serializers import (
     CriarUsuarioSerializer,
     CustomTokenObtainPairSerializer,
+    DocumentoLegalSerializer,
     EsqueciSenhaSerializer,
     MeSerializer,
+    PublicarDocumentoSerializer,
     RedefinirSenhaSerializer,
     UsuarioDetalheSerializer,
     UsuarioListaSerializer,
@@ -73,7 +75,7 @@ class AceitarTermosView(APIView):
 
     def post(self, request):
         versao = request.data.get('versao')
-        if versao != settings.VERSAO_TERMOS:
+        if versao != versao_vigente():
             return Response(
                 {'detail': 'O termo foi atualizado. Recarregue a página e leia a versão atual.'},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -83,7 +85,7 @@ class AceitarTermosView(APIView):
         usuario.termos_versao_aceita = versao
         usuario.termos_aceitos_em = timezone.now()
         usuario.save(update_fields=['termos_versao_aceita', 'termos_aceitos_em'])
-        registrar_log(usuario, 'termos_aceitos', detalhes=f'Termo de Uso e Aceite, versão {versao}', request=request)
+        registrar_log(usuario, 'termos_aceitos', detalhes=descrever_versao(versao), request=request)
 
         return Response(MeSerializer(usuario).data)
 
@@ -222,8 +224,8 @@ class UsuarioViewSet(
         dados = {
             'gerado_em': timezone.now(),
             'gerado_por': request.user.email,
-            'usuario': UsuarioDetalheSerializer(usuario).data,
-            'logs': AuditLogSerializer(logs, many=True).data,
+            'usuario': UsuarioDetalheSerializer(usuario, context={'emails_completos': True}).data,
+            'logs': AuditLogSerializer(logs, many=True, context={'emails_completos': True}).data,
         }
         registrar_log(request.user, 'dados_exportados', detalhes=f'usuario id={usuario.id}', request=request)
         return Response(dados)
@@ -241,3 +243,58 @@ class UsuarioViewSet(
         registrar_log(request.user, 'conta_anonimizada', detalhes=f'usuario id={usuario.id}, a pedido do titular',
                       request=request)
         return Response(UsuarioDetalheSerializer(self.get_queryset().get(pk=usuario.pk)).data)
+
+
+class DocumentoLegalView(APIView):
+    """Termo de Uso e Política de Privacidade vigentes (RF23).
+
+    GET é público, porque os documentos podem ser lidos sem login (RN04). Enquanto a Direção não publica
+    nenhuma versão pelo portal, conteudo vem nulo e o site mostra o texto que acompanha o código.
+    POST publica uma nova versão (só a Direção) e exige novo aceite de todos os usuários.
+    """
+
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAuthenticated(), AceitouTermosVigentes(), IsDirecao()]
+        return [AllowAny()]
+
+    def tipo_valido(self, tipo):
+        if tipo not in DocumentoLegal.Tipo.values:
+            raise NotFound('Documento não encontrado.')
+        return tipo
+
+    def get(self, request, tipo):
+        tipo = self.tipo_valido(tipo)
+        documento = documento_vigente(tipo)
+        if documento:
+            return Response(DocumentoLegalSerializer(documento).data)
+        return Response({'tipo': tipo, 'nome': DocumentoLegal.Tipo(tipo).label, 'versao': versao_de(tipo),
+                         'conteudo': None, 'resumo': None, 'publicado_em': None, 'publicado_por': None})
+
+    def post(self, request, tipo):
+        tipo = self.tipo_valido(tipo)
+        dados = PublicarDocumentoSerializer(data=request.data)
+        dados.is_valid(raise_exception=True)
+        vigente = documento_vigente(tipo)
+        if vigente and vigente.conteudo == dados.validated_data['conteudo']:
+            raise ValidationError(
+                {'conteudo': ['O texto é igual ao da versão vigente. Altere o documento antes de publicar.']})
+        documento = publicar(tipo, autor=request.user, **dados.validated_data)
+        registrar_log(request.user, 'documento_publicado',
+                      detalhes=f'{documento.get_tipo_display()}, versão {documento.versao}: {documento.resumo}',
+                      request=request)
+        return Response(DocumentoLegalSerializer(documento).data, status=status.HTTP_201_CREATED)
+
+
+class VersoesDocumentoView(APIView):
+    """Histórico das versões publicadas de um documento, para a Direção (RF23)."""
+
+    permission_classes = [IsAuthenticated, AceitouTermosVigentes, IsDirecao]
+
+    def get(self, request, tipo):
+        if tipo not in DocumentoLegal.Tipo.values:
+            raise NotFound('Documento não encontrado.')
+        versoes = DocumentoLegal.objects.filter(tipo=tipo).select_related('publicado_por')
+        return Response([
+            {k: v for k, v in DocumentoLegalSerializer(d).data.items() if k != 'conteudo'} for d in versoes
+        ])

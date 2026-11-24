@@ -1,0 +1,37 @@
+.documentos-abas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0;
+}
+
+.documentos-vigente {
+    margin: 4px 0 16px;
+}
+
+.documentos-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.painel-campo textarea.documentos-editor {
+    min-height: 420px;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.documentos-previa {
+    max-height: 520px;
+    overflow: auto;
+    margin: 0 0 16px;
+    padding: 16px 24px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+}

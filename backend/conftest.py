@@ -4,9 +4,9 @@ Só os testes marcados com django_db usam estas fixtures de banco; os testes
 unitários continuam sem acesso a ele.
 """
 import pytest
-from django.conf import settings
 from rest_framework.test import APIClient
 
+from apps.accounts.documentos import versao_vigente
 from apps.accounts.models import User
 
 SENHA_PADRAO = 'SenhaForte#2026'
@@ -28,7 +28,7 @@ def criar_usuario(db):
             email=email,
             password=SENHA_PADRAO,
             role=role,
-            termos_versao_aceita=settings.VERSAO_TERMOS if aceitou_termos else '',
+            termos_versao_aceita=versao_vigente() if aceitou_termos else '',
             **extras,
         )
 

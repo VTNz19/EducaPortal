@@ -16,7 +16,6 @@ from datetime import date, timedelta
 from decimal import Decimal
 from io import BytesIO
 
-from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
@@ -35,6 +34,7 @@ from apps.academic.models import (
     Turma,
     VinculoResponsavel,
 )
+from apps.accounts.documentos import versao_vigente
 from apps.accounts.models import User
 from apps.communication.models import AnexoTarefa, Aviso, EventoCalendario, Tarefa
 
@@ -79,7 +79,7 @@ class Command(BaseCommand):
         email = email or email_de(nome, sobrenome)
         usuario = User.objects.create_user(
             username=email, email=email, password=senha_demo(), role=role, first_name=nome, last_name=sobrenome,
-            termos_versao_aceita=settings.VERSAO_TERMOS, termos_aceitos_em=timezone.now(),
+            termos_versao_aceita=versao_vigente(), termos_aceitos_em=timezone.now(),
         )
         self.contas.append((role, email))
         return usuario

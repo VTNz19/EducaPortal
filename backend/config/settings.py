@@ -160,4 +160,6 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
 
+# Versões dos documentos enquanto a Direção não publica uma nova pelo portal (docs/*.md).
 VERSAO_TERMOS = '2.2'
+VERSAO_POLITICA = '2.1'

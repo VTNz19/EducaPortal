@@ -1,7 +1,6 @@
 import uuid
 from datetime import timedelta
 
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
@@ -22,7 +21,7 @@ class User(AbstractUser):
         choices=Role.choices,
         default=Role.ALUNO,
     )
-    termos_versao_aceita = models.CharField("versão do termo aceita", max_length=10, blank=True, default="")
+    termos_versao_aceita = models.CharField("versão dos documentos aceita", max_length=30, blank=True, default="")
     termos_aceitos_em = models.DateTimeField("termo aceito em", null=True, blank=True)
     desativado_em = models.DateTimeField("desativada em", null=True, blank=True, editable=False)
     anonimizado_em = models.DateTimeField("anonimizada em", null=True, blank=True, editable=False)
@@ -32,7 +31,9 @@ class User(AbstractUser):
 
     @property
     def precisa_aceitar_termos(self):
-        return self.termos_versao_aceita != settings.VERSAO_TERMOS
+        from .documentos import versao_vigente
+
+        return self.termos_versao_aceita != versao_vigente()
 
     def __str__(self):
         return f"{self.get_full_name() or self.username} ({self.email})"
@@ -65,3 +66,33 @@ class PasswordResetToken(models.Model):
     def esta_valido(self):
         expira_em = self.criado_em + timedelta(hours=1)
         return not self.usado and timezone.now() < expira_em
+
+
+class DocumentoLegal(models.Model):
+    """Versão publicada pela Direção do Termo de Uso ou da Política de Privacidade (RF23).
+
+    As versões nunca são editadas nem excluídas: cada publicação cria uma nova e exige novo aceite.
+    """
+
+    class Tipo(models.TextChoices):
+        TERMO = "termo", "Termo de Uso e Aceite"
+        POLITICA = "politica", "Política de Privacidade"
+
+    tipo = models.CharField("documento", max_length=10, choices=Tipo.choices)
+    versao = models.CharField("versão", max_length=12)
+    conteudo = models.TextField("conteúdo (Markdown)")
+    resumo = models.CharField("resumo da alteração", max_length=300)
+    publicado_em = models.DateTimeField("publicado em", default=timezone.now)
+    publicado_por = models.ForeignKey(
+        "accounts.User", verbose_name="publicado por", null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="+",
+    )
+
+    class Meta:
+        verbose_name = "documento legal"
+        verbose_name_plural = "documentos legais"
+        ordering = ["-publicado_em", "-id"]
+        constraints = [models.UniqueConstraint(fields=["tipo", "versao"], name="documento_versao_unica")]
+
+    def __str__(self):
+        return f"{self.get_tipo_display()} {self.versao}"

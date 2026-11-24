@@ -37,9 +37,10 @@ def test_secretaria_anonimiza_aluno_e_encerra_matricula_e_vinculos(escola, clien
     assert response.status_code == 200
     corpo = response.json()
     assert corpo['nome'] == 'Usuário removido'
-    assert corpo['email'] == f'removido-{ana.pk}@anonimizado.invalid'
+    assert corpo['email'] == 're***@anonimizado.invalid'
     assert corpo['is_active'] is False and corpo['anonimizado_em']
     ana.refresh_from_db()
+    assert ana.email == f'removido-{ana.pk}@anonimizado.invalid'
     assert not ana.has_usable_password()
     assert Matricula.objects.get(aluno=ana).situacao == 'encerrada'
     assert not VinculoResponsavel.objects.filter(aluno=ana).exists()

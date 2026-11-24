@@ -2,10 +2,10 @@
 import unicodedata
 from collections import defaultdict
 
-from django.conf import settings
 from django.db.models import Avg, Count
 from django.utils import timezone
 
+from apps.accounts.documentos import versao_vigente
 from apps.accounts.models import User
 
 from .calculos import (
@@ -236,7 +236,7 @@ def alunos_na_situacao(disciplina, situacao):
 
 def painel_do_gestor(numero_bimestre=None):
     contas_sem_aceite = (User.objects.filter(is_active=True)
-                         .exclude(termos_versao_aceita=settings.VERSAO_TERMOS).count())
+                         .exclude(termos_versao_aceita=versao_vigente()).count())
     base = {
         'perfil': 'gestor',
         'sem_dados': True,

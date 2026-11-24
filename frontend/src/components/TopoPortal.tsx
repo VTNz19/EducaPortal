@@ -14,6 +14,7 @@ const LINKS: { para: string; texto: string; papeis: Papel[] }[] = [
     { para: '/calendario', texto: 'Calendário', papeis: ['secretaria', 'direcao', 'professor', 'aluno', 'responsavel'] },
     { para: '/secretaria', texto: 'Contas', papeis: ['secretaria', 'direcao'] },
     { para: '/secretaria/estrutura', texto: 'Estrutura acadêmica', papeis: ['secretaria', 'direcao'] },
+    { para: '/direcao/documentos', texto: 'Documentos', papeis: ['direcao'] },
 ]
 
 export function TopoPortal() {

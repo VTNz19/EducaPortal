@@ -178,7 +178,7 @@ def test_deve_vincular_responsavel_e_recusar_vinculo_repetido(turma_3a, criar_us
     repetido = secretaria.post(f'/api/v1/alunos/{ana.id}/vincular/', {'responsavel': rita.id}, format='json')
 
     assert primeiro.status_code == 200
-    assert primeiro.json()['vinculos'][0]['email'] == 'rita@exemplo.com'
+    assert primeiro.json()['vinculos'][0]['email'] == 'ri***@exemplo.com'
     assert repetido.json() == {'detail': 'Este responsável já está vinculado ao aluno.'}
 
 
@@ -247,7 +247,7 @@ def test_deve_filtrar_contas_por_perfil_e_turma(turma_3a, turma_3b, criar_usuari
     response = secretaria.get('/api/v1/usuarios/', {'role': 'aluno', 'turma': turma_3a.id})
 
     resultados = response.json()['results']
-    assert [(u['email'], u['turma']) for u in resultados] == [('ana@exemplo.com', '3º A')]
+    assert [(u['email'], u['turma']) for u in resultados] == [('an***@exemplo.com', '3º A')]
 
 
 def test_deve_buscar_contas_por_nome_ou_email(criar_usuario, secretaria):
@@ -257,5 +257,6 @@ def test_deve_buscar_contas_por_nome_ou_email(criar_usuario, secretaria):
     por_nome = secretaria.get('/api/v1/usuarios/', {'busca': 'mendes'}).json()['results']
     por_email = secretaria.get('/api/v1/usuarios/', {'busca': 'bruno@'}).json()['results']
 
-    assert [u['email'] for u in por_nome] == ['carla@exemplo.com']
-    assert [u['email'] for u in por_email] == ['bruno@exemplo.com']
+    # a busca usa o e-mail completo, guardado no banco, mas a resposta só traz o e-mail mascarado
+    assert [u['email'] for u in por_nome] == ['ca***@exemplo.com']
+    assert [u['email'] for u in por_email] == ['br***@exemplo.com']

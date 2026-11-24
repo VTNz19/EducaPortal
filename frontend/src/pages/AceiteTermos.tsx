@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import termo from '../../../docs/termo-de-uso.md?raw'
 import { ConteudoMarkdown } from '../components/DocumentoLegal'
+import { useDocumento } from '../components/useDocumento'
 import { useAuth } from '../context/AuthContext'
 import './LegalPage.css'
 
@@ -10,8 +11,9 @@ export function AceiteTermos() {
     const [marcado, setMarcado] = useState(false)
     const [enviando, setEnviando] = useState(false)
     const [erro, setErro] = useState('')
+    const conteudo = useDocumento('termo', termo)
 
-    if (carregando) {
+    if (carregando || conteudo === null) {
         return <p>Carregando...</p>
     }
     if (!usuario) {
@@ -20,6 +22,8 @@ export function AceiteTermos() {
     if (!usuario.precisa_aceitar_termos) {
         return <Navigate to="/painel" replace />
     }
+
+    const [versaoTermo, versaoPolitica] = usuario.versao_termos_atual.split('+')
 
     async function handleAceitar() {
         setErro('')
@@ -37,12 +41,13 @@ export function AceiteTermos() {
         <div className="legal-page">
             <p className="aceite-intro">
                 Olá, <strong>{usuario.nome}</strong>. Para usar o EducaPortal, leia e aceite
-                o Termo de Uso e Aceite (versão {usuario.versao_termos_atual}). Se você é
-                menor de idade, leia junto com o seu responsável.
+                o Termo de Uso e Aceite (versão {versaoTermo}), junto com a Política de Privacidade
+                (versão {versaoPolitica}). Se algum deles foi atualizado, o aceite é pedido de novo.
+                Se você é menor de idade, leia junto com o seu responsável.
             </p>
 
             <div className="aceite-documento">
-                <ConteudoMarkdown conteudo={termo} />
+                <ConteudoMarkdown conteudo={conteudo} />
             </div>
 
             <label className="aceite-confirmacao">
